@@ -1,0 +1,90 @@
+.scroll-reveal-section {
+  position: relative;
+  height: 120vh; /* extra scroll distance so the reveal plays out gradually */
+  padding: 0;
+  background: var(--bg-body);
+}
+
+.scroll-reveal-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--bg-body);
+}
+
+.scroll-reveal-grid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+}
+
+.scroll-reveal-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+.scroll-reveal-container {
+  position: relative;
+  z-index: 1;
+  max-width: 50%;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  text-align: left;
+}
+
+.scroll-reveal-icons {
+  display: flex;
+  margin-bottom: 2rem;
+}
+
+.scroll-reveal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  font-size: 1.3rem;
+}
+
+.scroll-reveal-icon:not(:first-child) {
+  margin-left: -18px; /* 30% overlap of the 60px icon */
+}
+
+.scroll-reveal-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 4vw, 2.8rem);
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+  margin: 0;
+} 
+
+.scroll-reveal-word {
+  display: inline-block;
+  white-space: pre;
+}
+
+.scroll-reveal-subtitle {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin: 1.5rem 0 0 0;
+}
+
+@media (max-width: 900px) {
+  .scroll-reveal-container {
+    max-width: 90%;
+  }
+}
