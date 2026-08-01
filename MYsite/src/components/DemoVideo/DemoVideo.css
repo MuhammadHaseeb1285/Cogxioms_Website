@@ -1,0 +1,324 @@
+/* ==========================================================================
+   See Cogxioms in action — full-bleed watch band.
+
+   Full viewport width regardless of where it sits in the page, on the same
+   25/50/75 gridlines as every other section. At rest it is the ambient loop
+   with the mark centred; clicking swaps in the film.
+
+   Replaced .demo-video-* (a 900px centred card with a gradient play button).
+   None of those selectors were used outside this component.
+   ========================================================================== */
+
+.dv-section {
+  position: relative;
+  /* Breaks out of whatever max-width container it lands in. */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  background: var(--bg-body);
+  overflow: hidden;
+  isolation: isolate;
+  border-top: 1px solid #353535;
+  border-bottom: 1px solid #353535;
+  /* Overrides the global <section> padding in App.css:143. */
+  padding: 0;
+}
+
+.dv-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.dv-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* Height comes from the viewport, capped so it never runs taller than the
+   screen on a short laptop. Width is never derived from it — that inversion is
+   what produced the 569px overflow in Approach.css. */
+.dv-stage {
+  position: relative;
+  width: 100%;
+  height: min(78vh + 200px, 960px);
+  min-height: 620px;
+  display: grid;
+  place-items: center;
+}
+
+/* --- Rest state ----------------------------------------------------------- */
+
+.dv-ambient,
+.dv-film {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Already desaturated and darkened in the encode; this only holds the last
+   of the blue cast down so the band reads black rather than steel. */
+.dv-ambient {
+  filter: grayscale(1) brightness(0.9) contrast(1.04);
+}
+
+.dv-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, rgba(6, 6, 6, 0) 30%, rgba(6, 6, 6, 0.62) 100%),
+    linear-gradient(to bottom, rgba(6, 6, 6, 0.5), rgba(6, 6, 6, 0) 26%, rgba(6, 6, 6, 0) 74%, rgba(6, 6, 6, 0.5));
+}
+
+/* The whole band is the target — a small button in the middle of a full-bleed
+   video is a needlessly precise click. */
+.dv-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* The chip IS the cursor over the band, so the arrow is hidden. Only while at
+   rest — once the film is playing the controls need a real pointer. Applied to
+   descendants too, or the arrow returns over the button and the logo. */
+@media (hover: hover) and (pointer: fine) {
+  .dv-stage:not(.is-playing),
+  .dv-stage:not(.is-playing) * {
+    cursor: none;
+  }
+}
+
+.dv-mark {
+  width: clamp(120px, 15vw, 232px);
+  height: auto;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.12, 0.23, 0.5, 1);
+  will-change: transform;
+}
+
+.dv-hit:hover .dv-mark {
+  transform: scale(1.05);
+}
+
+/* Restores the ring the global button:focus rule in App.css:413 paints in
+   --accent-blue, which is #d4d4d4 and disappears against the video. */
+.dv-hit:focus-visible {
+  outline: none;
+}
+
+.dv-hit:focus-visible .dv-mark {
+  outline: 1px solid #ffffff;
+  outline-offset: 14px;
+}
+
+/* --- Corner tags ---------------------------------------------------------- */
+
+.dv-tag {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  line-height: 1;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Rides the cursor — positioned from the origin by motion values in the JSX.
+   `translate` is the standalone property so it composes with the transform
+   framer writes, instead of being overwritten by it. */
+.dv-tag-play {
+  left: 0;
+  translate: -50% -50%;
+  padding: 0.85rem 1.15rem;
+  background: #ffffff;
+  color: #060606;
+}
+
+/* Registration marks at the four corners. The inner span stays position:static
+   so its pseudo-elements resolve against .dv-tag-play, giving the lower pair. */
+.dv-tag-play::before,
+.dv-tag-play::after,
+.dv-tag-txt::before,
+.dv-tag-txt::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: 1.5px solid rgba(255, 255, 255, 0.92);
+}
+
+.dv-tag-play::before {
+  top: -7px;
+  left: -7px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.dv-tag-play::after {
+  top: -7px;
+  right: -7px;
+  border-left: 0;
+  border-bottom: 0;
+}
+
+.dv-tag-txt::before {
+  bottom: -7px;
+  left: -7px;
+  border-right: 0;
+  border-top: 0;
+}
+
+.dv-tag-txt::after {
+  bottom: -7px;
+  right: -7px;
+  border-left: 0;
+  border-top: 0;
+}
+
+.dv-tag-len {
+  right: clamp(1.25rem, 3vw, 2.5rem);
+  top: clamp(1.5rem, 3vw, 2.25rem);
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.dv-tag-len svg {
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+/* --- Playing state -------------------------------------------------------- */
+
+/* The band takes the film's own ratio while it plays, so the video fills the
+   full width edge to edge with no letterbox bars and nothing cropped. Capped at
+   the viewport so a wide monitor can't push the controls below the fold; only
+   past that cap does cover trim anything. */
+.dv-stage.is-playing {
+  height: auto;
+  aspect-ratio: 16 / 9;
+  max-height: 100vh;
+  min-height: 0;
+}
+
+.dv-film {
+  object-fit: cover;
+  background: #060606;
+  cursor: pointer;
+}
+
+/* Native fullscreen letterboxes rather than crops — losing the typography at
+   the frame edges is worse than a bar on an odd aspect ratio. */
+.dv-stage:fullscreen {
+  aspect-ratio: auto;
+  max-height: none;
+  background: #060606;
+}
+
+.dv-stage:fullscreen .dv-film {
+  object-fit: contain;
+}
+
+.dv-controls {
+  position: absolute;
+  z-index: 4;
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
+  display: flex;
+  gap: 0.6rem;
+}
+
+.dv-toggle {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  background: rgba(6, 6, 6, 0.62);
+  backdrop-filter: blur(6px);
+  color: #ffffff;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: background 0.25s, transform 0.25s;
+}
+
+.dv-toggle:hover {
+  background: rgba(6, 6, 6, 0.85);
+  transform: scale(1.06);
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  .dv-gridlines {
+    display: none;
+  }
+
+}
+
+/* A touch screen has no cursor to reveal it, so the hover state never fires and
+   the chip would never appear. Pin it to a fixed inset and force it visible —
+   !important because framer writes opacity and transform inline. */
+@media (hover: none), (pointer: coarse) {
+  .dv-tag-play {
+    left: clamp(1.25rem, 4vw, 2rem);
+    top: clamp(1.25rem, 4vw, 2rem);
+    translate: 0 0;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 600px) {
+  /* The 92vh term only binds on very short phones (~640px tall), where the
+     band would otherwise take the entire screen with nothing above or below. */
+  .dv-stage {
+    height: min(62vh + 200px, 720px, 92vh);
+    min-height: 540px;
+  }
+
+  .dv-tag {
+    font-size: 0.66rem;
+    letter-spacing: 0.09em;
+  }
+
+  .dv-tag-play {
+    padding: 0.7rem 0.9rem;
+  }
+
+  /* WCAG 2.5.5: 44px minimum on coarse pointers. */
+  .dv-toggle {
+    width: 46px;
+    height: 46px;
+    font-size: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dv-mark,
+  .dv-toggle {
+    transition: none;
+  }
+}
