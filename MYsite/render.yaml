@@ -1,0 +1,35 @@
+# Render Static Site config.
+#
+# Committing this means the settings live with the code instead of being clicked
+# into the dashboard, where the rewrite below is the step people forget.
+#
+# The rewrite is the whole point. React Router owns /about, /projects/relay and
+# the rest; none of them exist as files, only dist/index.html does. Without the
+# rule, clicking through from the homepage works but refreshing or opening a
+# direct link returns Render's 404 page. `type: rewrite` serves the shell while
+# leaving the URL alone, which is what the router needs — a redirect would
+# rewrite the address bar to / and lose the route.
+#
+# Asset requests never reach the rule: Render serves a real file when one exists,
+# so /assets/*, /Images/* and /videos/* resolve normally and a genuinely missing
+# file still 404s.
+services:
+  - type: web
+    name: cogxioms
+    runtime: static
+    buildCommand: npm ci && npm run build
+    staticPublishPath: ./dist
+    # Vite fingerprints everything under /assets, so those are safe to cache
+    # hard. index.html must not be, or a redeploy leaves browsers holding an old
+    # shell that points at asset hashes which no longer exist.
+    headers:
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache, no-store, must-revalidate
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
