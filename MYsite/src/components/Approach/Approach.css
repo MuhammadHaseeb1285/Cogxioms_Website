@@ -1,0 +1,260 @@
+/* ==========================================================================
+   "Built for the long term" — full-bleed split: video left, light panel right.
+   Sits directly below the approach cards on the homepage.
+   ========================================================================== */
+
+.longterm-section {
+  --longterm-ink: rgb(6, 6, 6);
+  --longterm-ink-soft: rgb(26, 26, 26);
+  --longterm-line: rgba(6, 6, 6, 0.14);
+
+  display: grid;
+  /* minmax(0, 1fr), not 1fr. A bare 1fr is minmax(auto, 1fr), so the track
+     refuses to shrink below its content's min-content width and the grid pushes
+     past its container instead. This is the most common source of grid overflow
+     on narrow screens. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  padding: 0;
+  background: #ececec;
+}
+
+/* --- Left: video ---------------------------------------------------------- */
+
+.longterm-media {
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-body);
+  /* The panel sets the height; the video fills whatever it lands on. */
+  min-height: 100%;
+}
+
+.longterm-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  display: block;
+  /* No grayscale filter: the desaturation is baked into the encode, which both
+     compresses far better (flat chroma) and skips a per-frame GPU filter. */
+}
+
+.longterm-media-texture {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1px);
+  background-size: 12px 12px;
+  pointer-events: none;
+}
+
+/* --- Right: light panel --------------------------------------------------- */
+
+.longterm-panel {
+  position: relative;
+  color: var(--longterm-ink);
+  padding: clamp(2rem, 4vw, 3.5rem) 0 0;
+}
+
+/* Vertical hairline at the panel's midpoint, echoing the gridlines on the
+   approach section above and aligning with the feature grid's column divide. */
+.longterm-rule {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 0.1px;
+  background: var(--longterm-line);
+  pointer-events: none;
+}
+
+.longterm-intro {
+  position: relative;
+  padding: 0 clamp(1.5rem, 3vw, 2.5rem) clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.longterm-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--longterm-ink);
+  margin-bottom: 1.25rem;
+}
+
+.longterm-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--longterm-ink);
+}
+
+.longterm-heading {
+  font-family: var(--font-display);
+  /* Lighter than the global h2's 800, matching the reference. */
+  font-weight: 500;
+  font-size: clamp(2rem, 3.4vw, 3.15rem);
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--longterm-ink);
+  margin: 0 0 1.15rem;
+  max-width: 14ch;
+}
+
+.longterm-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--longterm-ink-soft);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* --- Feature grid -------------------------------------------------------- */
+
+.longterm-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.longterm-cell {
+  padding: clamp(1.5rem, 2.6vw, 2.25rem) clamp(1.5rem, 3vw, 2.5rem);
+  border-top: 1px solid var(--longterm-line);
+  min-height: 200px;
+}
+
+/* Only the right-hand column carries a divider, so it reads as one line down the
+   grid rather than doubling up against the neighbouring cell. */
+.longterm-cell:nth-child(2n) {
+  border-left: 1px solid var(--longterm-line);
+}
+
+.longterm-icon {
+  display: block;
+  width: 38px;
+  height: 46px;
+  margin-bottom: 1.5rem;
+  color: var(--longterm-ink);
+}
+
+.longterm-icon svg {
+  display: block;
+}
+
+.longterm-cell-title {
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--longterm-ink);
+  margin: 0 0 0.7rem;
+}
+
+.longterm-cell-text {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: var(--longterm-ink-soft);
+  margin: 0;
+  max-width: 40ch;
+}
+
+.longterm-cell-cta {
+  display: flex;
+  align-items: center;
+}
+
+/* .gradient-btn.on-light lives in App.css — it is shared with the case studies,
+   so it cannot depend on this section's scoped custom properties. */
+
+/* --- Stroke draw --------------------------------------------------------- */
+
+/* Same mechanism as the approach cards: pathLength="1" on every path means one
+   dasharray covers them all. Gated on .is-armed so the icons stay visible when
+   motion is reduced or JS never runs. */
+.longterm-cell.is-armed .longterm-icon path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.longterm-cell.is-drawing .longterm-icon path {
+  animation: longterm-draw 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes longterm-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.longterm-cell.is-drawing .longterm-icon path:nth-of-type(1) { animation-delay: 0ms; }
+.longterm-cell.is-drawing .longterm-icon path:nth-of-type(2) { animation-delay: 90ms; }
+.longterm-cell.is-drawing .longterm-icon path:nth-of-type(3) { animation-delay: 180ms; }
+.longterm-cell.is-drawing .longterm-icon path:nth-of-type(n + 4) { animation-delay: 270ms; }
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .longterm-section {
+    grid-template-columns: 1fr;
+  }
+
+  /* min-height: 320px used to sit here alongside aspect-ratio: 16/9, and the two
+     fought: with a height floor set, the ratio resolved in the other direction
+     and drove the WIDTH to 320 x 16/9 = 569px. That single element was the whole
+     homepage overflow — 249px of horizontal scroll on a 320px phone, constant at
+     every width below 600px because it never depended on the viewport at all.
+     Width is now pinned to the container and the ratio derives the height, which
+     is the direction it should have run in. */
+  .longterm-media {
+    width: 100%;
+    min-height: 0;
+    aspect-ratio: 16 / 9;
+  }
+}
+
+/* 16:9 leaves the panel too shallow to read once it is only ~320px wide, so the
+   ratio squares up rather than a height floor being reintroduced. */
+@media (max-width: 520px) {
+  .longterm-media {
+    aspect-ratio: 4 / 3;
+  }
+}
+
+@media (max-width: 620px) {
+  .longterm-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* One column: no vertical divide for the rule to sit on. */
+  .longterm-rule {
+    display: none;
+  }
+
+  .longterm-cell:nth-child(2n) {
+    border-left: none;
+  }
+
+  .longterm-cell {
+    min-height: 0;
+  }
+
+  .longterm-heading {
+    max-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .longterm-cell.is-drawing .longterm-icon path {
+    animation: none;
+  }
+
+  .longterm-video {
+    /* An autoplaying loop is exactly the motion this preference asks to avoid. */
+    display: none;
+  }
+}

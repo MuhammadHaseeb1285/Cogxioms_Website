@@ -1,0 +1,300 @@
+/* ==========================================================================
+   FAQ — split panel: heading and CTA left, tabs and accordion right.
+
+   Light surface on a dark site, the same inversion the case-study list and
+   testimonials use. The 50/50 split lands on the centre gridline; the four tabs
+   divide the right half into quarters of their own.
+   ========================================================================== */
+
+.faq-section {
+  --faq-paper: #ececec;
+  --faq-ink: rgb(6, 6, 6);
+  --faq-ink-soft: rgb(38, 38, 38);
+  --faq-ink-mute: rgba(6, 6, 6, 0.55);
+  --faq-line: rgba(6, 6, 6, 0.14);
+  --faq-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--faq-paper);
+  color: var(--faq-ink);
+  overflow: hidden;
+  /* Overrides the global <section> padding in App.css:143. */
+  padding: 0;
+}
+
+.faq-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.faq-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: var(--faq-line);
+}
+
+.faq-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid var(--faq-line);
+  border-bottom: 1px solid var(--faq-line);
+}
+
+/* --- Left ----------------------------------------------------------------- */
+
+.faq-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(2.5rem, 5vw, 4rem) var(--faq-pad);
+}
+
+.faq-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faq-ink);
+  margin-bottom: 1.15rem;
+}
+
+.faq-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--faq-ink);
+}
+
+.faq-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  color: var(--faq-ink);
+  margin: 0;
+  max-width: 9ch;
+}
+
+.faq-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--faq-ink-soft);
+  max-width: 42ch;
+  margin: 0 0 1.5rem;
+}
+
+/* Inverted button — the one dark element on a light surface, matching the
+   active tab opposite it. */
+.faq-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1.15rem 0.85rem 0.85rem;
+  background: var(--faq-ink);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: opacity 0.22s ease;
+}
+
+.faq-btn:hover {
+  opacity: 0.85;
+}
+
+.faq-btn svg {
+  padding: 0.3rem;
+  background: rgba(255, 255, 255, 0.12);
+  font-size: 1.55rem;
+  flex-shrink: 0;
+}
+
+/* --- Right ---------------------------------------------------------------- */
+
+.faq-right {
+  border-left: 1px solid var(--faq-line);
+  min-width: 0;
+}
+
+.faq-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--faq-line);
+}
+
+.faq-tab {
+  padding: 1.15rem 0.5rem;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid var(--faq-line);
+  background: transparent;
+  color: var(--faq-ink-soft);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+.faq-tab:first-child {
+  border-left: 0;
+}
+
+.faq-tab:hover:not(.is-active) {
+  background: rgba(6, 6, 6, 0.05);
+  color: var(--faq-ink);
+}
+
+.faq-tab.is-active {
+  background: var(--faq-ink);
+  color: #ffffff;
+}
+
+/* --- Accordion ------------------------------------------------------------ */
+
+.faq-item {
+  position: relative;
+  border: 1px solid transparent;
+  border-top-color: var(--faq-line);
+  transition: border-color 0.22s ease, background 0.22s ease;
+}
+
+.faq-item:first-child {
+  border-top-color: transparent;
+}
+
+/* The open row is boxed out of the list — a full dark border on all four sides,
+   as in the reference. It sits on top so its border wins against the neighbours'
+   hairlines rather than doubling with them, and the negative side margins let it
+   break the list's edges by exactly its own border width. */
+.faq-item.is-open {
+  z-index: 1;
+  border-color: var(--faq-ink);
+  background: rgba(255, 255, 255, 0.45);
+  margin-inline: -1px;
+}
+
+.faq-item.is-open + .faq-item {
+  border-top-color: transparent;
+}
+
+/* A real <button> spanning the row, so the whole row is the hit target and the
+   open state is announced via aria-expanded. */
+.faq-q {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.25rem var(--faq-pad);
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq-q-icon {
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  color: var(--faq-ink);
+}
+
+.faq-q-text {
+  font-size: 0.95rem;
+  color: var(--faq-ink);
+}
+
+.faq-q-toggle {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--faq-line);
+  border-radius: 100%;
+  font-size: 0.7rem;
+  color: var(--faq-ink);
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+.faq-item.is-open .faq-q-toggle {
+  background: var(--faq-ink);
+  border-color: var(--faq-ink);
+  color: #ffffff;
+}
+
+/* height:auto is animated by framer-motion, so the panel needs to clip its own
+   content while collapsing. */
+.faq-a {
+  overflow: hidden;
+}
+
+/* Indented to the question text, not the row edge, so the answer reads as
+   belonging to the question above it. */
+.faq-a p {
+  margin: 0;
+  padding: 0 var(--faq-pad) 1.4rem calc(var(--faq-pad) + 22px + 1rem);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  color: var(--faq-ink-soft);
+  max-width: 66ch;
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .faq-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .faq-left {
+    gap: 2rem;
+  }
+
+  .faq-right {
+    border-left: 0;
+    border-top: 1px solid var(--faq-line);
+  }
+}
+
+@media (max-width: 720px) {
+  .faq-gridlines {
+    display: none;
+  }
+
+  /* Two-by-two: four tab labels do not fit across a phone. */
+  .faq-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .faq-tab:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .faq-tab:nth-child(n + 3) {
+    border-top: 1px solid var(--faq-line);
+  }
+
+  .faq-q {
+    grid-template-columns: 20px minmax(0, 1fr) 20px;
+    gap: 0.75rem;
+  }
+
+  .faq-a p {
+    padding-left: calc(var(--faq-pad) + 20px + 0.75rem);
+  }
+}

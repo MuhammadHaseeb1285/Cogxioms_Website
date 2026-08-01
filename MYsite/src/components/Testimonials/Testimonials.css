@@ -1,0 +1,342 @@
+/* ==========================================================================
+   Testimonials — four cards in one edge-to-edge row.
+
+   Light surface on a dark site, the same inversion the case-study list uses.
+   Cards alternate tint so the row reads as four panels without needing a border
+   between each; the hairline divider does the rest.
+
+   Replaced a stacked auto-rotating carousel (.testimonials-*, .testimonial-*),
+   whose selectors are all gone — none were referenced outside this component.
+   ========================================================================== */
+
+.tst-section {
+  --tst-paper: #ececec;
+  --tst-paper-alt: #e3e3e3;
+  --tst-ink: rgb(6, 6, 6);
+  --tst-ink-soft: rgb(38, 38, 38);
+  --tst-ink-mute: rgba(6, 6, 6, 0.5);
+  --tst-line: rgba(6, 6, 6, 0.14);
+  --tst-pad: clamp(1.1rem, 2vw, 1.9rem);
+
+  position: relative;
+  background: var(--tst-paper);
+  color: var(--tst-ink);
+  overflow: hidden;
+  /* Overrides the global <section> padding in App.css:143 — the heading band and
+     the card row carry their own spacing, and the inherited padding showed as a
+     light strip above and below the row. */
+  padding: 0;
+}
+
+.tst-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tst-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: var(--tst-line);
+}
+
+/* --- Heading band --------------------------------------------------------- */
+
+.tst-head {
+  position: relative;
+  z-index: 1;
+  border-bottom: 1px solid var(--tst-line);
+}
+
+.tst-head-inner {
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--tst-pad) clamp(2rem, 4vw, 3rem);
+}
+
+.tst-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tst-ink);
+  margin-bottom: 1.15rem;
+}
+
+.tst-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--tst-ink);
+}
+
+.tst-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--tst-ink);
+  margin: 0 0 1rem;
+  max-width: 16ch;
+}
+
+.tst-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--tst-ink-soft);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* --- Row ------------------------------------------------------------------ */
+
+.tst-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--tst-line);
+}
+
+.tst-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  background: var(--tst-paper);
+}
+
+/* Alternating tint, as in the reference. */
+.tst-card:nth-child(even) {
+  background: var(--tst-paper-alt);
+}
+
+.tst-card + .tst-card {
+  border-left: 1px solid var(--tst-line);
+}
+
+/* --- Rail ----------------------------------------------------------------- */
+
+/* Client name set vertically, reading bottom-to-top, with the hatch anchored at
+   the foot. writing-mode plus a 180deg turn is what gives that direction —
+   `vertical-rl` alone reads top-to-bottom. */
+.tst-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: var(--tst-pad) 0.7rem;
+  border-right: 1px solid var(--tst-line);
+}
+
+.tst-rail-name {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 0.78rem;
+  letter-spacing: 0.01em;
+  color: var(--tst-ink-soft);
+  white-space: nowrap;
+}
+
+.tst-rail-glyph {
+  display: block;
+  width: 20px;
+  height: 10px;
+  flex-shrink: 0;
+  color: var(--tst-ink);
+}
+
+/* --- Body ----------------------------------------------------------------- */
+
+/* Mark and headline at the top, rating and comment pushed to the bottom by the
+   auto margin on .tst-foot — that gap is what makes the row read as designed
+   rather than as text that happened to stop early. */
+.tst-body {
+  display: flex;
+  flex-direction: column;
+  min-height: 420px;
+  padding: var(--tst-pad);
+}
+
+.tst-mark {
+  width: 26px;
+  height: 26px;
+  display: block;
+  margin-bottom: 1.4rem;
+  fill: none;
+  stroke: var(--tst-ink);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* One line, always. The titles are short enough to fit, and nowrap plus ellipsis
+   guarantees it — a title that wrapped to two lines in one card and one in the
+   next would throw the four rules below them out of alignment. */
+.tst-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.3vw, 1.2rem);
+  line-height: 1.3;
+  letter-spacing: -0.018em;
+  color: var(--tst-ink);
+  margin: 0 0 1.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tst-rule {
+  display: block;
+  height: 1px;
+  background: var(--tst-line);
+}
+
+.tst-foot {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.tst-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tst-ink-mute);
+  margin-bottom: 0.6rem;
+}
+
+.tst-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 1.5rem;
+}
+
+.tst-stars svg {
+  width: 15px;
+  height: 15px;
+  fill: var(--tst-ink);
+}
+
+.tst-stars svg.is-empty {
+  fill: none;
+  stroke: var(--tst-ink);
+  stroke-width: 1.4;
+}
+
+/* Reserves four line-boxes so all four comments occupy identical height and the
+   attributions beneath them sit on one baseline. The quotes are within a
+   7-character spread, so they wrap to the same count at most widths anyway —
+   this holds the alignment at the widths where one of them tips over. */
+.tst-text {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--tst-ink-soft);
+  margin: 0 0 1.1rem;
+  min-height: calc(1.65em * 4);
+}
+
+.tst-author {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.5;
+  letter-spacing: 0.06em;
+  color: var(--tst-ink);
+  margin: 0;
+}
+
+/* Two line-boxes reserved.
+   .tst-foot is bottom-anchored (margin-top:auto), so the "Rating" label's
+   position is set by the foot's own height — and this line is the one part of it
+   that varies: "System Administrator, Autodesguaces Alicante" wraps to two lines
+   where "COO, Drivion" takes one. That difference propagated upward and knocked
+   the Rating and Comment labels out of line across the four cards.
+   With this fixed, and the title held to one line and .tst-text to four, every
+   block in the foot has a known height and the four cards align by construction. */
+.tst-role {
+  display: block;
+  color: var(--tst-ink-mute);
+  margin-top: 0.25rem;
+  min-height: calc(1.5em * 2);
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1200px) {
+  .tst-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tst-card + .tst-card {
+    border-left: 0;
+  }
+
+  .tst-card:nth-child(even) {
+    border-left: 1px solid var(--tst-line);
+  }
+
+  .tst-card:nth-child(n + 3) {
+    border-top: 1px solid var(--tst-line);
+  }
+
+  /* Two-up would otherwise put two identical tints side by side on row two. */
+  .tst-card:nth-child(3) {
+    background: var(--tst-paper-alt);
+  }
+
+  .tst-card:nth-child(4) {
+    background: var(--tst-paper);
+  }
+
+  .tst-body {
+    min-height: 360px;
+  }
+}
+
+@media (max-width: 720px) {
+  .tst-gridlines {
+    display: none;
+  }
+
+  .tst-head-inner {
+    margin-left: 0;
+  }
+
+  .tst-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tst-card:nth-child(even),
+  .tst-card:nth-child(3),
+  .tst-card:nth-child(4) {
+    border-left: 0;
+  }
+
+  .tst-card:nth-child(even) {
+    background: var(--tst-paper-alt);
+  }
+
+  .tst-card:nth-child(odd) {
+    background: var(--tst-paper);
+  }
+
+  .tst-card + .tst-card {
+    border-top: 1px solid var(--tst-line);
+  }
+
+  .tst-body {
+    min-height: 0;
+  }
+
+  .tst-foot {
+    padding-top: 1.5rem;
+  }
+}

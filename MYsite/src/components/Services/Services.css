@@ -1,0 +1,873 @@
+/* ==========================================================================
+   Services — tab strip over a split panel.
+
+   Geometry follows the reference "PRODUCT FEATURES" block: four tabs across the
+   full width landing on the 25/50/75 gridlines, then a 50/50 media/copy panel.
+   The active tab inverts to white; everything else stays on #060606 with a 6%
+   hairline and the same tiled grain the case-study rows use.
+
+   This replaced a sidebar-and-accordion layout whose selectors (.services-*,
+   .service-card*, .expand-*, .sidebar-item) are all gone — none of them were
+   referenced outside this component.
+   ========================================================================== */
+
+.svc-section {
+  --svc-ink: #ffffff;
+  --svc-ink-soft: rgba(255, 255, 255, 0.85);
+  --svc-ink-mute: rgba(255, 255, 255, 0.5);
+  --svc-line: rgba(255, 255, 255, 0.06);
+  --svc-line-strong: rgba(255, 255, 255, 0.2);
+  /* Structural rules use the same value as the vertical gridlines (#353535).
+     --svc-line at 6% resolves to about rgb(21,21,21) against #060606, which is
+     effectively invisible — fine for a hairline inside a card, not enough to
+     read as a section divider. */
+  --svc-rule: #353535;
+  --svc-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--bg-body);
+  color: var(--svc-ink);
+  overflow: hidden;
+  /* Overrides the global <section> padding in App.css:143. .svc-head carries the
+     spacing above the tab strip; the inherited padding just pushed the section's
+     top rule away from whatever sits above it. */
+  padding: 0;
+}
+
+/* Rules above and below the heading. Full-bleed, unlike .svc-intro inside it. */
+.svc-head {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--svc-rule);
+  border-bottom: 1px solid var(--svc-rule);
+}
+
+/* Same device as .approach-gridlines and .case-gridlines — space-evenly over
+   three 0.1px rules puts them at exactly 25 / 50 / 75, which is where the tab
+   boundaries and the panel split have to land. */
+.svc-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.svc-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* --- Intro --------------------------------------------------------------- */
+
+/* Starts on the 25% line, so the heading block occupies the second quarter and
+   sits directly above the second tab. */
+.svc-intro {
+  position: relative;
+  z-index: 1;
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--svc-pad) clamp(2rem, 4vw, 3.25rem);
+}
+
+.svc-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+  margin-bottom: 1.15rem;
+}
+
+.svc-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--svc-ink);
+}
+
+.svc-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.2vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--svc-ink);
+  margin: 0 0 1.15rem;
+  max-width: 11ch;
+}
+
+.svc-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--svc-ink-soft);
+  max-width: 54ch;
+  margin: 0;
+}
+
+/* --- Tab strip ----------------------------------------------------------- */
+
+/* No border-top: .svc-head already draws that rule, and stacking both puts two
+   hairlines on adjacent pixels. */
+.svc-tabs {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--svc-rule);
+}
+
+/* Reset rather than restyle: these are real <button>s so the tablist behaves
+   for keyboard and screen readers, which means the UA styling comes off first. */
+.svc-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7rem;
+  min-height: 72px;
+  margin: 0;
+  padding: 0.9rem 1rem;
+  border: 0;
+  border-left: 1px solid var(--svc-line);
+  background: var(--bg-body);
+  color: var(--svc-ink-soft);
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  overflow: hidden;
+  isolation: isolate;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+.svc-tab:first-child {
+  border-left: 0;
+}
+
+.svc-tab-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+.svc-tab-icon,
+.svc-tab-label {
+  position: relative;
+  z-index: 1;
+}
+
+.svc-tab-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.svc-tab-label {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.svc-tab:hover:not(.is-active) {
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--svc-ink);
+}
+
+/* The one inverted surface in the section. */
+.svc-tab.is-active {
+  background: #ffffff;
+  color: #060606;
+}
+
+/* Left as it was, per request. Note for later: App.css:413 carries a global
+   `button:focus { outline: 2px solid var(--accent-blue); outline-offset: 2px }`
+   and --accent-blue is #d4d4d4, so a mouse click on any button anywhere draws a
+   near-white ring just outside it. Plain :focus fires on click where
+   :focus-visible would not — switching that one global rule to :focus-visible
+   removes it for mouse users while keeping it for keyboard. */
+.svc-tab:focus-visible {
+  outline: 2px solid var(--svc-ink);
+  outline-offset: -4px;
+}
+
+/* Sits on the active tab's lower edge; dark, because the active tab is white. */
+.svc-tab-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  height: 2px;
+  background: rgba(6, 6, 6, 0.55);
+  transform-origin: left center;
+}
+
+/* --- Panel --------------------------------------------------------------- */
+
+/* Single-cell grid: the outgoing and incoming panels are both placed in cell
+   1/1, so they overlap during the swap instead of the container emptying. That
+   is what stops the page height dropping — and with it the scroll correction
+   that made the tab strip jump on every click. */
+.svc-panel {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-areas: 'panel';
+}
+
+.svc-panel-inner {
+  grid-area: panel;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+}
+
+/* --- Visual stage -------------------------------------------------------- */
+
+/* Replaces what used to be a stock photograph. See ServiceVisual.jsx — the
+   panel now holds a small animated UI mockup over a drifting wash, which is what
+   the reference does and what keeps this section from looking like clip art. */
+.svc-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1.83;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0a0a0a;
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+/* Same grid as .approach-visual-dots and .longterm-media-texture — 1px dots on
+   an 11px pitch, masked so the field fades out toward the edges instead of
+   ending on a hard rectangle. */
+.svc-stage-dots {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 11px 11px;
+  mask-image: radial-gradient(ellipse 82% 78% at 50% 46%, #000 30%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 82% 78% at 50% 46%, #000 30%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Drifting spotlight, sitting under the card so it reads as depth rather than
+   as a second graphic. */
+.svc-stage-glow {
+  position: absolute;
+  inset: -30%;
+  z-index: 0;
+  background:
+    radial-gradient(40% 48% at 32% 34%, rgba(255, 255, 255, 0.2), transparent 68%),
+    radial-gradient(34% 42% at 70% 68%, rgba(255, 255, 255, 0.12), transparent 72%);
+  filter: grayscale(1) blur(6px);
+  animation: svc-drift 19s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.svc-stage-glow.is-still {
+  animation: none;
+}
+
+@keyframes svc-drift {
+  from {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(4%, 3%, 0) scale(1.12);
+  }
+}
+
+/* Corner registration marks and centre ticks. */
+.svc-stage-marks {
+  position: absolute;
+  inset: clamp(0.6rem, 1.6vw, 1.25rem);
+  z-index: 1;
+  width: auto;
+  height: auto;
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.28);
+  stroke-width: 1;
+  pointer-events: none;
+}
+
+/* Slow vertical sweep. 9s with a long gap between passes, so it registers as
+   the panel being alive without ever pulling the eye off the copy. */
+.svc-stage-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 34%;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.05), transparent);
+  animation: svc-scan 9s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes svc-scan {
+  0% {
+    transform: translateY(-120%);
+  }
+  55%,
+  100% {
+    transform: translateY(360%);
+  }
+}
+
+.svc-stage-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+/* --- Mock card ----------------------------------------------------------- */
+
+/* The card plus its satellite chip. Positioned as a unit so the chip can break
+   the card's edge without the two drifting apart at other widths. */
+.svc-stack {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 390px);
+}
+
+.svc-mock {
+  position: relative;
+  background: rgba(6, 6, 6, 0.82);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--svc-line-strong);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 18px 50px -12px rgba(0, 0, 0, 0.85);
+}
+
+/* Overlaps the card's bottom-right corner — the one element that breaks the
+   rectangle, which is what stops the composition reading as a single slab. */
+.svc-satellite {
+  position: absolute;
+  right: clamp(-2.25rem, -2vw, -0.85rem);
+  bottom: -0.9rem;
+  z-index: 3;
+}
+
+.svc-sat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+  background: rgba(6, 6, 6, 0.92);
+  backdrop-filter: blur(15px);
+  border: 1px solid var(--svc-line-strong);
+  border-radius: 20px;
+  padding: 0.42rem 0.75rem;
+  white-space: nowrap;
+  box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.9);
+}
+
+.svc-sat-chip strong {
+  font-weight: 500;
+}
+
+.svc-sat-commits {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.svc-sat-commits i {
+  width: 3px;
+  height: 10px;
+  border-radius: 1px;
+  background: var(--svc-ink);
+}
+
+.svc-sat-ping {
+  width: 7px;
+  height: 7px;
+  border-radius: 100%;
+  background: var(--svc-ink);
+}
+
+.svc-mock-head,
+.svc-mock-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.9rem;
+}
+
+.svc-mock-head {
+  border-bottom: 1px solid var(--svc-line-strong);
+}
+
+.svc-mock-foot {
+  border-top: 1px solid var(--svc-line-strong);
+}
+
+.svc-mock-title {
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 300;
+  color: var(--svc-ink);
+}
+
+.svc-mock-body {
+  padding: 0.95rem 0.9rem;
+}
+
+.svc-mock-dots {
+  display: inline-flex;
+  gap: 5px;
+}
+
+.svc-mock-dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 100%;
+  background: var(--svc-ink);
+  opacity: 0.75;
+}
+
+.svc-mock-foot-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--svc-ink);
+  font-size: 0.85rem;
+}
+
+.svc-mock-tag,
+.svc-mock-chip {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--svc-ink);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding: 0.2rem 0.42rem;
+  white-space: nowrap;
+}
+
+/* The single inverted chip per card, echoing the active tab above. */
+.svc-mock-tag.is-solid,
+.svc-mock-chip.is-solid {
+  background: var(--svc-ink);
+  border-color: var(--svc-ink);
+  color: #060606;
+}
+
+/* --- AI Automation: step list -------------------------------------------- */
+
+.svc-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.svc-step {
+  display: grid;
+  grid-template-columns: 18px auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.svc-step-ms {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.svc-step-dot {
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 100%;
+  font-size: 0.6rem;
+}
+
+.svc-step-label {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--svc-ink-soft);
+}
+
+.svc-step-rule {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.22);
+  transform-origin: left center;
+}
+
+/* --- Custom Software: test bars ------------------------------------------ */
+
+.svc-bars {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.svc-bar {
+  display: grid;
+  grid-template-columns: 74px minmax(0, 1fr) 22px;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.svc-bar-pct {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  text-align: right;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.svc-bar-name {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  color: var(--svc-ink-soft);
+}
+
+.svc-bar-track {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+
+.svc-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--svc-ink);
+}
+
+/* --- Data Intelligence: bar chart ---------------------------------------- */
+
+.svc-chart {
+  position: relative;
+  height: 96px;
+  margin-bottom: 0.85rem;
+}
+
+/* Four hairline rules behind the bars, so the chart reads as measured rather
+   than as an abstract pattern. */
+.svc-chart-grid {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.09) 0 1px,
+    transparent 1px 24px
+  );
+  pointer-events: none;
+}
+
+.svc-chart-bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.svc-chart-bar {
+  flex: 1 0 0;
+  background: rgba(255, 255, 255, 0.55);
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom center;
+}
+
+/* The trend line uses the same nine values as the bars — see SPARK. */
+.svc-chart-line {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+}
+
+.svc-chart-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+/* --- Cloud Systems: regions and uptime ----------------------------------- */
+
+.svc-nodes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.svc-node {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  padding: 0.42rem 0.55rem;
+}
+
+.svc-node-ok {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.svc-node-pulse {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 100%;
+  background: var(--svc-ink);
+}
+
+.svc-node-name {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  color: var(--svc-ink-soft);
+}
+
+.svc-meter {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.svc-meter-label,
+.svc-meter-value {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.05em;
+  color: var(--svc-ink-soft);
+}
+
+.svc-meter-track {
+  display: block;
+  height: 5px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.09);
+  overflow: hidden;
+}
+
+.svc-meter-fill {
+  display: block;
+  height: 100%;
+  background: var(--svc-ink);
+}
+
+/* Headline pinned top, footer pinned bottom — the gap between them is the point,
+   and it keeps the badge row anchored near the image's lower edge however long
+   the headline runs. */
+.svc-copy {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2rem, 5vw, 4rem);
+  padding: clamp(1.75rem, 3.2vw, 3rem) var(--svc-pad);
+  border-left: 1px solid var(--svc-line);
+}
+
+.svc-headline {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.55vw, 1.375rem);
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0.02em;
+  color: var(--svc-ink);
+  margin: 0;
+  max-width: 42ch;
+}
+
+.svc-note {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--svc-ink-soft);
+  margin: 0 0 1.25rem;
+  max-width: 44ch;
+}
+
+.svc-badge-row {
+  display: flex;
+  align-items: center;
+}
+
+.svc-badge-disc {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border: 1px solid var(--svc-line-strong);
+  border-radius: 100%;
+  background: var(--svc-line);
+  color: var(--svc-ink);
+  font-size: 0.8rem;
+}
+
+.svc-badge-link {
+  width: 22px;
+  height: 1px;
+  flex-shrink: 0;
+  background: var(--svc-ink-mute);
+}
+
+.svc-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #060606;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 0.45rem 0.95rem;
+  white-space: nowrap;
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  /* Two-by-two keeps every label on one line; four across starts breaking
+     "Artificial Intelligence" well before this width. */
+  .svc-tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .svc-tab:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .svc-tab:nth-child(n + 3) {
+    border-top: 1px solid var(--svc-line);
+  }
+
+  .svc-panel-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-copy {
+    border-left: 0;
+    border-top: 1px solid var(--svc-line);
+  }
+
+  .svc-stage {
+    aspect-ratio: 1.9;
+  }
+}
+
+@media (max-width: 720px) {
+  /* One column of tabs, and no column boundaries left for the rules to mark —
+     the same call .approach-gridlines makes at its own breakpoint. */
+  .svc-gridlines {
+    display: none;
+  }
+
+  .svc-intro {
+    margin-left: 0;
+  }
+
+  .svc-tabs {
+    grid-template-columns: 1fr;
+  }
+
+  .svc-tab {
+    justify-content: flex-start;
+    padding-inline: var(--svc-pad);
+    min-height: 60px;
+    border-left: 0;
+  }
+
+  .svc-tab + .svc-tab {
+    border-top: 1px solid var(--svc-line);
+  }
+
+  .svc-stage {
+    aspect-ratio: 1.4;
+  }
+}
+
+/* The mock card simulates a dense UI, so its labels are deliberately small — but
+   8.1px is past legible on a phone. Floored here rather than in the base rules,
+   so the desktop density is preserved. */
+@media (max-width: 768px) {
+  .svc-mock-tag,
+  .svc-mock-chip {
+    font-size: 0.7rem;
+  }
+
+  .svc-step-label,
+  .svc-bar-name,
+  .svc-node-name,
+  .svc-meter-label,
+  .svc-meter-value {
+    font-size: 0.72rem;
+  }
+
+  .svc-step-ms,
+  .svc-bar-pct,
+  .svc-node-ok {
+    font-size: 0.66rem;
+  }
+}
+
+@media (pointer: coarse), (max-width: 768px) {
+  .svc-tab {
+    min-height: 56px;
+  }
+}
+
+/* 9.9px at 360px. The mock card's densest labels get a floor on small screens. */
+@media (max-width: 768px) {
+  .svc-step-ms,
+  .svc-badge {
+    font-size: 0.7rem;
+  }
+}

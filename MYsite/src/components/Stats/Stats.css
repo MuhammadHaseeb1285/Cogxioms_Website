@@ -1,0 +1,205 @@
+/* ==========================================================================
+   Statistics — heading band over four equal quarters.
+
+   Same construction as the Services and About bands: 25/50/75 gridlines, a
+   heading starting on the 25% line between full-bleed rules, then an
+   edge-to-edge grid divided by hairlines. Figures sit at the bottom of each
+   cell with the icon pinned top, matching the case-study stat rows.
+
+   Replaced .stats-section / .stats-grid / .stat-tile, which were generic enough
+   to collide with ProductStats on the same page.
+   ========================================================================== */
+
+.sts-section {
+  --sts-ink: #ffffff;
+  --sts-ink-soft: rgba(255, 255, 255, 0.72);
+  --sts-ink-mute: rgba(255, 255, 255, 0.42);
+  --sts-line: rgba(255, 255, 255, 0.08);
+  /* Structural rules match the vertical gridlines; --sts-line at 8% is too
+     faint to read as a section divider on #060606. */
+  --sts-rule: #353535;
+  --sts-tile: rgba(255, 255, 255, 0.05);
+  --sts-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--bg-body);
+  color: var(--sts-ink);
+  overflow: hidden;
+  /* Overrides the global <section> padding in App.css:143 — the band carries
+     its own spacing. */
+  padding: 0;
+}
+
+.sts-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sts-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* --- Heading band --------------------------------------------------------- */
+
+.sts-head {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--sts-rule);
+  border-bottom: 1px solid var(--sts-rule);
+}
+
+.sts-head-inner {
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--sts-pad) clamp(2rem, 4vw, 3rem);
+}
+
+.sts-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--sts-ink);
+  margin-bottom: 1.15rem;
+}
+
+.sts-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--sts-ink);
+}
+
+.sts-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--sts-ink);
+  margin: 0;
+  max-width: 18ch;
+}
+
+/* --- Grid ----------------------------------------------------------------- */
+
+.sts-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--sts-rule);
+}
+
+/* Icon pinned top, figure and label pinned bottom, so a two-line label pushes
+   its number up rather than dragging the whole row taller. */
+.sts-tile {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(1.75rem, 3vw, 2.5rem) var(--sts-pad);
+}
+
+.sts-tile + .sts-tile {
+  border-left: 1px solid var(--sts-line);
+}
+
+.sts-tile-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border: 1px solid var(--sts-line);
+  border-radius: 7px;
+  background: var(--sts-tile);
+  color: var(--sts-ink);
+  font-size: 1.1rem;
+}
+
+.sts-tile-number {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  color: var(--sts-ink);
+  margin-bottom: 0.6rem;
+}
+
+.sts-tile-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--sts-ink-mute);
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .sts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sts-tile + .sts-tile {
+    border-left: 0;
+  }
+
+  .sts-tile:nth-child(even) {
+    border-left: 1px solid var(--sts-line);
+  }
+
+  .sts-tile:nth-child(n + 3) {
+    border-top: 1px solid var(--sts-line);
+  }
+}
+
+@media (max-width: 720px) {
+  .sts-gridlines {
+    display: none;
+  }
+
+  .sts-head-inner {
+    margin-left: 0;
+  }
+
+  /* Stays two-up rather than collapsing to a single column: four figures in one
+     stack made the section four screens tall on a phone for no gain. 2x2 keeps
+     "50+ / 6" on one row and "100% / 24/7" on the next, and 4 divides evenly so
+     there is no orphan cell. The ≤1000 rule already supplies the right dividers
+     for two columns, so only the tile spacing needs adjusting here. */
+  .sts-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Centred on small screens. Left-aligning a two-character figure like "6" or
+     "50+" against a label that wraps to two lines leaves each cell looking
+     lopsided; centring balances the pair. align-items handles the icon (a flex
+     item, so text-align does not reach it) and text-align handles the copy. */
+  .sts-tile {
+    gap: 1.25rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  /* The icon-top / figure-bottom split needs less air once the cell is narrow. */
+  .sts-tile-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+}

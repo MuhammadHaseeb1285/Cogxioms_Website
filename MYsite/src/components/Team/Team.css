@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Our Team — heading band over four quarters.
+
+   Caption cell in the first quarter, one person in each of the other three, so
+   the cell edges land on the same 25/50/75 lines as every other grid.
+
+   Replaced .team-* / .member-* / .skill-tag (a three-card carousel with arrows).
+   None of those selectors were used outside this component.
+   ========================================================================== */
+
+.tm-section {
+  --tm-ink: #ffffff;
+  --tm-ink-soft: rgba(255, 255, 255, 0.72);
+  --tm-ink-mute: rgba(255, 255, 255, 0.42);
+  --tm-line: rgba(255, 255, 255, 0.08);
+  --tm-rule: #353535;
+  --tm-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--bg-body);
+  color: var(--tm-ink);
+  overflow: hidden;
+  /* Overrides the global <section> padding in App.css:143. */
+  padding: 0;
+}
+
+.tm-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tm-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* --- Heading band --------------------------------------------------------- */
+
+.tm-head {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--tm-rule);
+  border-bottom: 1px solid var(--tm-rule);
+}
+
+.tm-head-inner {
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--tm-pad) clamp(2rem, 4vw, 3rem);
+}
+
+.tm-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tm-ink);
+  margin-bottom: 1.15rem;
+}
+
+.tm-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--tm-ink);
+}
+
+.tm-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3.4vw, 3rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--tm-ink);
+  margin: 0 0 1rem;
+  max-width: 15ch;
+}
+
+.tm-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--tm-ink-soft);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* --- Row ------------------------------------------------------------------ */
+
+.tm-row {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--tm-rule);
+}
+
+/* Content anchored to both ends of the cell. The quarter is as tall as a
+   portrait plus its body copy, and a label alone at the top left the whole
+   column reading as an empty gap. */
+.tm-caption {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.6rem, 2.8vw, 2.4rem) var(--tm-pad);
+}
+
+.tm-caption-label {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--tm-ink);
+}
+
+.tm-caption-foot {
+  display: block;
+}
+
+.tm-caption-count {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--tm-ink);
+  margin-bottom: 0.8rem;
+}
+
+.tm-caption-note {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.65;
+  color: var(--tm-ink-mute);
+  max-width: 24ch;
+}
+
+.tm-cell {
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--tm-line);
+}
+
+/* --- Portrait ------------------------------------------------------------- */
+
+/* Desaturated at rest, resolving on hover under the same spring the case-study
+   rows use — a face behaves like every other image on the site. */
+/* 4:5 rather than square — the headshots are 420x540 (0.78), so a square cell
+   would crop the top of the head and the bottom of the tie off every one of
+   them. This matches the source ratio almost exactly, so cover barely trims. */
+.tm-photo {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  isolation: isolate;
+  background: #0d0d0d;
+}
+
+/* object-position: top so cover trims from the bottom, never the face. */
+.tm-photo-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  filter: grayscale(1);
+}
+
+.tm-photo-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #060606;
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.tm-photo-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+.tm-photo-index {
+  position: absolute;
+  z-index: 3;
+  top: 0.9rem;
+  right: 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* --- Body ----------------------------------------------------------------- */
+
+.tm-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: clamp(1.4rem, 2.4vw, 2rem) var(--tm-pad) clamp(1.6rem, 2.8vw, 2.4rem);
+}
+
+.tm-name {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--tm-ink);
+  margin: 0 0 0.4rem;
+}
+
+.tm-role {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--tm-ink-mute);
+  margin-bottom: 1rem;
+}
+
+.tm-bio {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--tm-ink-soft);
+  margin: 0 0 1.25rem;
+}
+
+/* Pushed to the bottom so the chip rows align across the three cells however
+   long the bios run. */
+.tm-skills {
+  list-style: none;
+  margin: auto 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tm-skill {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  padding: 0.28rem 0.55rem;
+  border: 1px solid var(--tm-line);
+  color: var(--tm-ink-soft);
+  white-space: nowrap;
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  /* Caption folds into a full-width strip and the three people sit below it —
+     a quarter is too narrow for a portrait plus its chips at this width. */
+  .tm-row {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .tm-caption {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--tm-line);
+  }
+
+  .tm-cell:first-of-type {
+    border-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .tm-gridlines {
+    display: none;
+  }
+
+  .tm-head-inner {
+    margin-left: 0;
+  }
+
+  .tm-row {
+    grid-template-columns: 1fr;
+  }
+
+  .tm-cell {
+    border-left: 0;
+  }
+
+  .tm-cell + .tm-cell {
+    border-top: 1px solid var(--tm-line);
+  }
+
+  /* Two things were wrong here in turn. 16/10 cropped a 420x540 portrait to
+     landscape and cut through the faces; going full-width 4/5 fixed the crop but
+     made each photo ~450px tall on a phone.
+     Capping the width is the answer instead of touching the ratio: 4/5 matches
+     the source to within 0.02 so nothing is trimmed, and the cap keeps the frame
+     to a portrait-card size. Width is capped and the ratio derives height from
+     it — never the reverse, which is the trap that produced the 569px overflow
+     in Approach.css. */
+  .tm-photo {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    max-width: 220px;
+    margin-inline: auto;
+  }
+
+  /* Centred to match the footer and the stat tiles on small screens. */
+  .tm-body {
+    text-align: center;
+  }
+
+  .tm-skills {
+    justify-content: center;
+  }
+}

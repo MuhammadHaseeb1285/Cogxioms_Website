@@ -1,0 +1,945 @@
+/* About Section - Modern Design */
+
+/* Homepage About Section */
+/* No bottom padding: the card grid is the last thing in the section and the
+   "Built for the long term" panel butts straight up against it. */
+.about-section {
+  padding: 6rem 0 0;
+  background: var(--bg-body);
+  position: relative;
+  overflow: hidden;
+}
+
+
+.about-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 2;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.about-title {
+  font-size: 3.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.gradient-text {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  display: inline;
+  position: relative;
+}
+.gradient-text::after {
+  display: none !important;
+}
+
+.about-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ==========================================================================
+   Approach cards — dotted panel + isometric line art + mono blurb.
+   Used by the homepage (first three) and the /about page (all four).
+   ========================================================================== */
+
+.approach-section {
+  margin-bottom: 6rem;
+  position: relative;
+}
+
+/* Three vertical rules splitting the section into four equal quarters — the same
+   device as .scroll-reveal-grid, identical line weight and colour. space-evenly
+   across the full section width puts them at exactly 25% / 50% / 75%. */
+.approach-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.approach-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* Keep section content above the rules. */
+.approach-section > .section-title,
+.approach-section > .approach-grid {
+  position: relative;
+  z-index: 1;
+}
+
+/* Full-bleed with no gap, so each card occupies exactly one of the four quarters
+   the rules mark out. A gap would shift the card edges off the quarter lines:
+   with 4 columns and 3 gaps, a gap centre sits a quarter-gap away from 25%. */
+.approach-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* The left border falls on a quarter line, continuing the rule above and below
+   the card band — the card background would otherwise hide it. */
+.approach-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid #353535;
+  border-right: none;
+  border-radius: 0;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+/* No rule at the section's outer edge. */
+.approach-grid > .approach-card:first-child {
+  border-left: none;
+}
+
+.approach-card:hover {
+  background: var(--bg-surface-alt);
+}
+
+/* --- Visual panel ------------------------------------------------------- */
+
+/* Painted from the first frame, so the card is never an empty box while the
+   art measures its stroke lengths. */
+/* Transparent, not --bg-body: a different tone from the card would leave a visible
+   seam where the panel meets the text even with no border drawn. */
+.approach-visual {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+}
+
+.approach-visual-dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px);
+  background-size: 11px 11px;
+  /* Fades the grid out toward the edges so the panel doesn't read as a swatch. */
+  mask-image: radial-gradient(ellipse 78% 72% at 50% 48%, #000 35%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 78% 72% at 50% 48%, #000 35%, transparent 100%);
+}
+
+.approach-visual-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 65%
+  );
+  background-size: 260% 100%;
+  animation: approach-sheen 1.9s ease-in-out infinite;
+  transition: opacity 0.5s ease;
+}
+
+/* Once the art is up, the placeholder sweep retires. */
+.approach-card.is-revealed .approach-visual-sheen {
+  opacity: 0;
+  animation: none;
+}
+
+@keyframes approach-sheen {
+  from { background-position: 160% 0; }
+  to { background-position: -60% 0; }
+}
+
+/* Fixed box rather than a width alone: the illustrations have different aspect
+   ratios (the Framer art is portrait, the authored set landscape), and only a
+   box both dimensions can letterbox into renders them at a matched size. */
+.approach-art {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 66%;
+  height: 66%;
+  /* --art-scale trims illustrations that fill their viewBox edge-to-edge, so
+     every card carries the same optical weight. */
+  transform: translate(-50%, -50%) scale(var(--art-scale, 1));
+  opacity: 0;
+  /* Quick, so it doesn't mask the stroke draw that follows. */
+  transition: opacity 0.25s ease;
+}
+
+.approach-card.is-revealed .approach-art {
+  opacity: 1;
+}
+
+.approach-art svg {
+  display: block;
+  /* preserveAspectRatio defaults to xMidYMid meet, so each viewBox scales to fit. */
+  overflow: hidden;
+}
+
+/* --- Stroke draw -------------------------------------------------------- */
+
+/* Each path declares pathLength="1", so one dasharray covers every path
+   regardless of its real length. Gated on .is-armed: without JS the artwork
+   stays fully drawn instead of invisible. The stylesheet's stroke-dasharray
+   also overrides the presentation attribute Framer bakes into its own paths. */
+.approach-card.is-armed .approach-art path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+.approach-card.is-drawing .approach-art path {
+  animation: approach-draw 1.15s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes approach-draw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* Hold the fills back until the outlines have largely drawn. Without this the
+   filled faces appear at full strength immediately and the silhouette simply pops
+   in, which hides the draw entirely. fill-opacity is an inherited property, so a
+   single rule on the svg covers every path without touching the injected markup. */
+.approach-card.is-armed .approach-art svg {
+  fill-opacity: 0;
+}
+
+.approach-card.is-drawing .approach-art svg {
+  animation: approach-fill 0.7s ease 0.95s forwards;
+}
+
+@keyframes approach-fill {
+  to { fill-opacity: 1; }
+}
+
+/* Staggered per sibling path — the delay can't live in a custom property here,
+   since setting one per path means mutating the injected SVG. */
+.approach-card.is-drawing .approach-art path:nth-of-type(1) { animation-delay: 0ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(2) { animation-delay: 55ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(3) { animation-delay: 110ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(4) { animation-delay: 165ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(5) { animation-delay: 220ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(6) { animation-delay: 275ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(7) { animation-delay: 330ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(8) { animation-delay: 385ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(9) { animation-delay: 440ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(10) { animation-delay: 495ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(11) { animation-delay: 550ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(12) { animation-delay: 605ms; }
+.approach-card.is-drawing .approach-art path:nth-of-type(n + 13) { animation-delay: 660ms; }
+
+/* --- Body --------------------------------------------------------------- */
+
+/* No texture of its own: a second dot grid at a different size would change
+   density at the boundary and read as a line under the artwork. The panel's dots
+   are masked so they fade out before they reach the text. */
+.approach-body {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.approach-title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  margin-bottom: 0.625rem;
+}
+
+.approach-text {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .approach-visual-sheen {
+    animation: none;
+    opacity: 0;
+  }
+
+  .approach-art {
+    transition: none;
+  }
+
+  .approach-card.is-drawing .approach-art path {
+    animation: none;
+  }
+}
+
+/* CTA Button */
+.about-cta {
+  text-align: center;
+}
+
+/* .gradient-btn / .gradient-icon now live in App.css (globally loaded). */
+
+.learn-more-btn {
+  /* Remove old background, use gradient-btn instead */
+}
+
+.arrow-icon {
+  /* Remove old color, use gradient-icon instead */
+}
+
+.learn-more-btn:hover .arrow-icon {
+  transform: translateX(5px);
+}
+
+.btn-glow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.learn-more-btn:hover .btn-glow {
+  left: 100%;
+}
+
+/* Detailed About Page */
+.about-detail-section {
+  padding: 6rem 0;
+  background: var(--bg-surface);
+  color: var(--accent-blue);
+  min-height: 100vh;
+  border-top: 8px solid var(--accent-blue);
+  border-bottom: 8px solid var(--accent-blue);
+}
+
+.about-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Hero Section */
+.about-hero {
+  text-align: center;
+  margin-bottom: 6rem;
+  padding: 3rem 0;
+}
+
+.about-hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  line-height: 1.2;
+  letter-spacing: -1px;
+}
+
+.about-hero-subtitle {
+  font-size: 1.3rem;
+  color: var(--accent-blue);
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Section Titles */
+.section-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  
+  text-align: center;
+  margin-bottom: 3rem;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: var(--accent-gradient);
+  border-radius: 2px;
+}
+
+/* Values Section */
+.values-section {
+  margin-bottom: 6rem;
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.value-card {
+  background: var(--bg-surface);
+  border-top: 4px solid var(--accent-blue);
+  border-bottom: 4px solid var(--accent-blue);
+  border-radius: 0px;
+  padding: 2.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.value-card:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(212, 212, 212, 0.3);
+  transform: translateY(-5px);
+}
+
+.value-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-gradient);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  font-size: 2rem;
+  border-radius: 0px;
+  box-shadow: 0 8px 25px rgba(212, 212, 212, 0.18);
+  transition: all 0.3s ease;
+}
+
+.value-card:hover .value-icon {
+  transform: scale(1.1) rotate(10deg);
+}
+
+.value-card h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: var(--accent-blue);
+}
+
+.value-card p {
+  color: var(--accent-blue);
+  line-height: 1.6;
+}
+
+/* Process Section */
+.process-section {
+  margin-bottom: 6rem;
+}
+
+.process-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.process-step {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  position: relative;
+}
+
+.step-number {
+  width: 80px;
+  height: 80px;
+  background: var(--accent-gradient);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 8px 25px rgba(212, 212, 212, 0.3);
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-content h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--accent-blue);
+}
+
+.step-content p {
+  color: var(--accent-blue);
+  line-height: 1.6;
+}
+
+.step-connector {
+  position: absolute;
+  left: 40px;
+  top: 80px;
+  width: 2px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--accent-blue), var(--accent-blue));
+  border-radius: 1px;
+}
+
+/* Team Section */
+.team-section {
+  text-align: center;
+  background: var(--accent-gradient);
+  color: #fff;
+}
+
+.team-description {
+  font-size: 1.2rem;
+  color: #fff;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  line-height: 1.6;
+}
+
+.team-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-number {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--accent-blue);
+  margin-bottom: 0.5rem;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.stat-label {
+  color: var(--accent-blue);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Reviews Section */
+.reviews-section {
+  margin: 5rem auto 0 auto;
+  max-width: 700px;
+  padding: 3rem 1.5rem;
+  background: var(--accent-gradient);
+  border-radius: 0px;
+  box-shadow: 0 8px 32px rgba(212, 212, 212, 0.10);
+  position: relative;
+  overflow: visible;
+}
+
+.reviews-title, .reviews-main-heading {
+  color: #fff;
+  font-size: 2.2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2.5rem;
+  letter-spacing: -1px;
+}
+
+.review-card, .review-card-stacked {
+  background: var(--bg-surface) !important;
+  border-radius: 0px;
+  box-shadow: 0 8px 32px rgba(212, 212, 212, 0.10);
+  padding: 2rem 1.5rem;
+  color: var(--accent-blue) !important;
+  font-size: 1.15rem;
+  font-weight: 500;
+  position: relative;
+  opacity: 0.95;
+  transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.3s;
+  will-change: transform;
+  border: 1.5px solid var(--border-subtle);
+}
+
+.review-author {
+  display: block;
+  margin-top: 1.2rem;
+  color: var(--accent-blue) !important;
+  font-weight: 700;
+  font-size: 1rem;
+  text-align: right;
+}
+
+.reviews-right .arrow {
+  background: var(--accent-blue);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0.85;
+  transition: background 0.2s, opacity 0.2s;
+}
+.reviews-right .arrow.left { left: 10px; }
+.reviews-right .arrow.right { right: 10px; }
+.reviews-right .arrow:hover { background: var(--accent-blue); opacity: 1; }
+
+.team-section, .reviews-section {
+  max-width: 1200px;
+  margin: 4rem auto;
+  background: var(--bg-surface);
+  position: relative;
+  border-radius: 0px;
+  box-shadow: 0 8px 32px rgba(212, 212, 212, 0.10);
+  padding: 4rem 2rem;
+  overflow: hidden;
+  border: 4px solid var(--accent-blue);
+}
+.team-section::before, .reviews-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%25" stop-color="%233b82f6"/><stop offset="50%25" stop-color="%233b82f6"/><stop offset="100%25" stop-color="%238b5cf6"/></linearGradient><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="url(%23g)" stroke-width="1.2"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.18;
+  z-index: 0;
+  border-radius: 0px;
+}
+.team-section > *, .reviews-section > * {
+  position: relative;
+  z-index: 1;
+}
+
+.team-section .section-title,
+.team-section .team-description {
+  color: var(--accent-blue);
+}
+
+.reviews-main-heading {
+  color: var(--accent-blue);
+}
+
+/* Review arrows at far left/right */
+.reviews-right {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.reviews-right .arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--accent-blue);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 20;
+  opacity: 0.85;
+  transition: background 0.2s, opacity 0.2s;
+}
+.reviews-right .arrow.left {
+  left: 16px;
+}
+.reviews-right .arrow.right {
+  right: 16px;
+}
+.reviews-right .arrow:hover {
+  background: var(--accent-blue);
+  opacity: 1;
+}
+
+/* Remove underline from About heading gradient */
+.gradient-text::after {
+  display: none !important;
+}
+
+.value-card {
+  border-left: 4px solid;
+  border-right: 4px solid;
+  border-image: linear-gradient(0deg, var(--accent-blue), var(--accent-blue)) 1;
+}
+
+.team-section {
+  margin-top: 4rem;
+  margin-bottom: 4rem;
+}
+
+.review-card, .review-card-stacked, .stat-item, .value-card {
+  border-radius: 0px !important;
+  border: 2px solid;
+  /* border-image: var(--accent-gradient) 1; */
+  background: var(--bg-surface);
+}
+
+.reviews-left {
+  background: var(--bg-surface);
+  border-radius: 0px;
+  position: relative;
+  padding: 2rem 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(212, 212, 212, 0.08);
+  z-index: 2;
+}
+.reviews-left::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%25" stop-color="%233b82f6"/><stop offset="50%25" stop-color="%233b82f6"/><stop offset="100%25" stop-color="%238b5cf6"/></linearGradient><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="url(%23g)" stroke-width="1.2"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.18;
+  border-radius: 0px;
+  z-index: 1;
+}
+.reviews-left > * {
+  position: relative;
+  z-index: 2;
+}
+
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .about-title,
+  .about-hero-title {
+    font-size: 3rem;
+  }
+  
+  .values-grid {
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .approach-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Two columns leave one divider. Dropping two rules leaves the third centred
+     by space-evenly, landing on the 50% column boundary. */
+  .approach-gridline:nth-child(1),
+  .approach-gridline:nth-child(3) {
+    display: none;
+  }
+
+  /* Only the right-hand column carries a divider. */
+  .approach-grid > .approach-card:nth-child(odd) {
+    border-left: none;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Keeps the bottom flush with the next section, as at full width. */
+  .about-section {
+    padding: 4rem 0 0;
+  }
+
+  .about-detail-section {
+    padding: 4rem 0;
+  }
+  
+  .about-title,
+  .about-hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .about-subtitle,
+  .about-hero-subtitle {
+    font-size: 1.1rem;
+  }
+  
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .value-card {
+    padding: 2rem;
+  }
+
+  .process-steps {
+    gap: 2rem;
+  }
+  
+  .process-step {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .step-connector {
+    display: none;
+  }
+  
+  .team-stats {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-title,
+  .about-hero-title {
+    font-size: 2rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+  
+  .value-card {
+    padding: 1.5rem;
+  }
+
+  .approach-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Single column: no vertical boundaries to mark. */
+  .approach-gridlines {
+    display: none;
+  }
+
+  .approach-grid > .approach-card {
+    border-left: none;
+  }
+
+  .step-number {
+    width: 60px;
+    height: 60px;
+    font-size: 1.2rem;
+  }
+  
+  .stat-number {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .reviews-section {
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: 1.2rem 0.5rem;
+    border-radius: 0px;
+  }
+  .reviews-left, .reviews-right {
+    max-width: 100%;
+    min-width: 0;
+    border-radius: 0px;
+    padding: 1.2rem 0.7rem;
+  }
+  .review-card, .review-card-stacked {
+    border-radius: 0px !important;
+  }
+}
+
+.stat-item {
+  border: 2px solid var(--accent-blue);
+  border-radius: 0px;
+  background: var(--bg-surface);
+  color: var(--accent-blue);
+}
+.stat-number {
+  color: var(--accent-blue) !important;
+}
+.stat-label {
+  color: var(--accent-blue);
+}
+
+.value-card {
+  border-radius: 0px !important;
+}
+
+.team-section {
+  /* border-radius: 0px;
+  border: 4px solid;
+  border-image: var(--accent-gradient) 1; */
+}
+
+.reviews-section {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 2rem;
+  border-radius: 0px;
+  border: 4px solid;
+  /* border-image: var(--accent-gradient) 1; */
+  background: var(--bg-surface) !important;
+  position: relative;
+  flex-wrap: wrap;
+}
+.reviews-left, .reviews-right {
+  flex: 1 1 0;
+  min-width: 320px;
+  max-width: 600px;
+  background: var(--bg-surface);
+  border-radius: 0px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 12px rgba(212, 212, 212, 0.08);
+  margin: 0;
+  padding: 2rem 1.5rem;
+}
+.reviews-left::before, .reviews-right::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%25" stop-color="%233b82f6"/><stop offset="50%25" stop-color="%233b82f6"/><stop offset="100%25" stop-color="%238b5cf6"/></linearGradient><pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M 20 0 L 0 0 0 20" fill="none" stroke="url(%23g)" stroke-width="1.2"/></pattern></defs><rect width="100" height="100" fill="none"/><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+  opacity: 0.18;
+  border-radius: 0px;
+  z-index: 1;
+}
+.reviews-left > *, .reviews-right > * {
+  position: relative;
+  z-index: 2;
+}
+.review-card, .review-card-stacked {
+  border-radius: 0px !important;
+  border: 2px solid;
+  border-image: var(--accent-gradient) 1;
+  background: var(--bg-surface);
+}
+
+.reviews-subheading {
+  color: var(--accent-blue) !important;
+}

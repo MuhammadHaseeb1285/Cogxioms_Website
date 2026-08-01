@@ -1,0 +1,336 @@
+/* ==========================================================================
+   /about — built to the same system as Services and the case studies.
+
+   Everything here follows three rules the rest of the site already uses:
+     - content blocks start on the 25% gridline
+     - heading bands are bracketed by full-bleed hairlines
+     - grids run edge to edge with hairline dividers, never as floating cards
+
+   Class names are abt- prefixed. The previous markup shared generic names
+   (.section-title, .stat-number, .value-card) with other components, and
+   .stat-number in particular was reaching into ProductStats on the homepage,
+   where both mount and CSS is global.
+   ========================================================================== */
+
+.abt {
+  --abt-ink: #ffffff;
+  --abt-ink-soft: rgba(255, 255, 255, 0.72);
+  --abt-ink-mute: rgba(255, 255, 255, 0.42);
+  --abt-line: rgba(255, 255, 255, 0.08);
+  /* Structural rules match the vertical gridlines. --abt-line at 8% resolves to
+     about rgb(25,25,25) on #060606 — right for a hairline inside a grid, too
+     faint to read as a section divider. */
+  --abt-rule: #353535;
+  --abt-tile: rgba(255, 255, 255, 0.05);
+  --abt-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--bg-body);
+  color: var(--abt-ink);
+  overflow: hidden;
+  /* App.css:143 gives every <section> clamp(3rem, 8vw, 5rem) of vertical
+     padding. This page spaces itself through its heading bands, so that padding
+     is dead space — and because .abt-gridlines span the section, the rules kept
+     running down through the empty strip below the testimonials. */
+  padding: 0;
+}
+
+/* Same device as .approach-gridlines and .svc-gridlines. */
+.abt-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.abt-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: #353535;
+}
+
+/* --- Heading bands -------------------------------------------------------- */
+
+.abt-band {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--abt-rule);
+  border-bottom: 1px solid var(--abt-rule);
+}
+
+/* The hero has no rule above it — the header already closes the top edge. */
+.abt-band-hero {
+  border-top: 0;
+}
+
+.abt-band-inner {
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--abt-pad) clamp(2rem, 4vw, 3.25rem);
+}
+
+.abt-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--abt-ink);
+  margin-bottom: 1.15rem;
+}
+
+.abt-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--abt-ink);
+}
+
+.abt-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.1rem, 4.4vw, 3.8rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--abt-ink);
+  margin: 0 0 1.15rem;
+  max-width: 16ch;
+}
+
+.abt-band-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.2vw, 2.8rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  color: var(--abt-ink);
+  margin: 0;
+  max-width: 16ch;
+}
+
+.abt-lede,
+.abt-band-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--abt-ink-soft);
+  max-width: 56ch;
+  margin: 0;
+}
+
+.abt-band-lede {
+  margin-top: 1rem;
+}
+
+/* --- Quarter grids -------------------------------------------------------- */
+
+/* Four equal columns landing on the same 25/50/75 lines as the gridlines, with
+   hairline dividers instead of borders around each cell. */
+.abt-quads {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--abt-rule);
+}
+
+/* Height is matched to .approach-card, so Values, Process and Approach read as
+   one run of equal blocks rather than three grids of different depths.
+   An approach card is a 4:3 visual at 25% width — 18.75vw — plus its body copy,
+   which lands near 24vw at desktop widths. Clamped at both ends so the row does
+   not collapse on narrow screens or run absurdly tall on very wide ones. */
+.abt-quad {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 3.5vw, 2.75rem);
+  min-height: clamp(380px, 24vw, 470px);
+  padding: clamp(1.75rem, 3vw, 2.5rem) var(--abt-pad);
+}
+
+.abt-quad + .abt-quad {
+  border-left: 1px solid var(--abt-line);
+}
+
+/* Centred in the cell and sized to carry it — these blocks are as tall as the
+   approach cards, and a small tile pinned to the left edge left the whole upper
+   half of each one reading as empty. align-self does the centring: .abt-quad is
+   a column flex, so without it the tile stretches to the left edge. */
+.abt-quad-icon {
+  display: grid;
+  place-items: center;
+  align-self: center;
+  width: clamp(96px, 6.4vw, 128px);
+  height: clamp(96px, 6.4vw, 128px);
+  margin-top: clamp(0.5rem, 1.5vw, 1.5rem);
+  flex-shrink: 0;
+  border: 1px solid var(--abt-line);
+  border-radius: 12px;
+  background: var(--abt-tile);
+  color: var(--abt-ink);
+}
+
+/* Stroke-drawn, not filled — see AboutIcons.jsx. The stroke is deliberately
+   thin: these sit among hairlines, and a heavier weight makes them read as UI
+   buttons rather than as drawings. */
+.abt-icon-svg {
+  width: clamp(50px, 3.4vw, 68px);
+  height: clamp(50px, 3.4vw, 68px);
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  /* Scales with the icon so the line weight stays proportional — a fixed 1.3px
+     looks like hairline scratches at this size. */
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  overflow: visible;
+}
+
+/* Pushes the copy to the bottom of the cell, so titles align across the row
+   regardless of icon or numeral height. */
+.abt-quad-body {
+  margin-top: auto;
+}
+
+.abt-quad-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--abt-ink);
+  margin: 0 0 0.7rem;
+}
+
+.abt-quad-text {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.7;
+  color: var(--abt-ink-soft);
+  margin: 0;
+}
+
+.abt-quad-index {
+  position: absolute;
+  top: clamp(1.75rem, 3vw, 2.5rem);
+  right: var(--abt-pad);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--abt-ink-mute);
+}
+
+/* --- Team stats ----------------------------------------------------------- */
+
+/* Four columns, so the dividers land on the same 25/50/75 lines as every other
+   grid on the page rather than at 33/66. */
+.abt-stats {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--abt-rule);
+}
+
+.abt-stat {
+  padding: clamp(1.75rem, 3.5vw, 3rem) var(--abt-pad);
+}
+
+.abt-stat + .abt-stat {
+  border-left: 1px solid var(--abt-line);
+}
+
+.abt-stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -0.028em;
+  color: var(--abt-ink);
+  margin-bottom: 0.6rem;
+}
+
+.abt-stat-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--abt-ink-mute);
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .abt-quads {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Reset the every-cell rule, then re-apply only where a divider belongs. */
+  .abt-quad + .abt-quad {
+    border-left: 0;
+  }
+
+  .abt-quad:nth-child(even) {
+    border-left: 1px solid var(--abt-line);
+  }
+
+  .abt-quad:nth-child(n + 3) {
+    border-top: 1px solid var(--abt-line);
+  }
+
+  /* Stats fold to 2x2 alongside the quads, keeping the two grids in step. */
+  .abt-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .abt-stat + .abt-stat {
+    border-left: 0;
+  }
+
+  .abt-stat:nth-child(even) {
+    border-left: 1px solid var(--abt-line);
+  }
+
+  .abt-stat:nth-child(n + 3) {
+    border-top: 1px solid var(--abt-line);
+  }
+}
+
+@media (max-width: 720px) {
+  /* One column: no vertical boundaries left for the rules to mark, the same
+     call .approach-gridlines makes at this breakpoint. */
+  .abt-gridlines {
+    display: none;
+  }
+
+  .abt-band-inner {
+    margin-left: 0;
+  }
+
+  .abt-quads,
+  .abt-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .abt-quad {
+    min-height: 0;
+    gap: 1.25rem;
+  }
+
+  .abt-quad:nth-child(even),
+  .abt-stat:nth-child(even),
+  .abt-stat + .abt-stat {
+    border-left: 0;
+  }
+
+  .abt-quad + .abt-quad,
+  .abt-stat + .abt-stat {
+    border-top: 1px solid var(--abt-line);
+  }
+}
