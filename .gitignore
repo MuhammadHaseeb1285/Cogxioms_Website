@@ -28,9 +28,3 @@ Thumbs.db
 
 # Agent workspace
 .claude/
-
-# Orphan lockfile at the repo root — the real one lives in MYsite/
-/package-lock.json
-
-# Stray duplicate of MYsite/src/components/Team/Team.jsx
-/src/
