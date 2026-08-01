@@ -1,0 +1,833 @@
+/* Header Styles — no border/seam, so it visually merges into the hero below it */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 0.8rem 0;
+  z-index: 1000;
+  background: transparent;
+  font-family: inherit;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.header.scrolled {
+  padding: 0.6rem 0;
+}
+
+/* Scroll Progress Bar */
+.scroll-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: var(--accent-gradient);
+  border-radius: 0 2px 2px 0;
+  transition: width 0.1s ease;
+  z-index: 1001;
+}
+
+.header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 96%;
+  max-width: 1500px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Logo Styles */
+.logoLink {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
+  padding: 1rem 2rem;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.logo-image {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 0px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.logoLink:hover .logo-image {
+  transform: scale(1.15) rotate(8deg);
+  filter: drop-shadow(0 8px 16px rgba(212, 212, 212, 0.3));
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.logoMain {
+  color: white;
+  font-weight: 800;
+  font-size: 1.4rem;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #ffffff, #e2e8f0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.logoSub {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.logoPulse {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: var(--accent-gradient);
+  border-radius: 50%;
+  top: -2px;
+  right: -8px;
+  animation: pulse 2s infinite;
+  box-shadow: 0 0 10px rgba(212, 212, 212, 0.5);
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.8); opacity: 0.8; }
+  50% { transform: scale(1.2); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.8; }
+}
+
+/* Navigation Styles */
+.nav {
+  display: none;
+}
+
+.navList {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem {
+  position: relative;
+  margin-right: 1rem;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.2rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  border-radius: 0px;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  margin-right: 1rem;
+}
+
+.navIconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.navIcon {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.3s ease;
+}
+
+.navText {
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.navUnderline {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--accent-gradient);
+  transform: translateX(-50%) scaleX(0);
+  transform-origin: center;
+  border-radius: 1px;
+  transition: transform 0.3s ease;
+}
+
+.navLink:hover {
+  color:white;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.navLink:hover .navIcon {
+  color: white;
+  transform: scale(1.1);
+}
+
+.navLink:hover .navUnderline {
+  transform: translateX(-50%) scaleX(1);
+}
+
+.navLink.active {
+  color:whitesmoke;
+  background: rgba(212, 212, 212, 0.08);
+  border: 1px solid rgba(212, 212, 212, 0.18);
+}
+
+.navLink.active .navIcon {
+  color: var(--accent-blue);
+}
+
+.navLink.active .navUnderline {
+  transform: translateX(-50%) scaleX(1);
+}
+
+/* CTA Button Styles */
+.ctaContainer {
+  position: relative;
+}
+
+.ctaButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  background: var(--accent-gradient);
+  color: white;
+  border-radius: 0px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(212, 212, 212, 0.18);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.ctaText {
+  position: relative;
+  z-index: 2;
+}
+
+.ctaArrow {
+  font-size: 0.8rem;
+  transition: transform 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.ctaGlow {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.ctaPulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: var(--accent-gradient);
+  border-radius: 0px;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  animation: ctaPulse 2s infinite;
+}
+
+@keyframes ctaPulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.8; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+}
+
+.ctaButton:hover {
+  filter: brightness(1.08);
+  transform: translateY(-5px) scale(1.05) rotate(-1deg);
+  box-shadow: 0 8px 32px rgba(212, 212, 212, 0.5), 0 0 0 8px rgba(212, 212, 212, 0.15);
+}
+
+.ctaButton:hover .ctaArrow {
+  transform: translateX(3px);
+}
+
+.ctaButton:hover .ctaGlow {
+  left: 100%;
+}
+
+/* Mobile Button — now the only nav trigger at every screen size */
+.mobileButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  width: 68px;
+  height: 68px;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+
+.mobileButton:hover {
+  opacity: 0.7;
+}
+
+/* Two-line hamburger icon */
+.hamburger-lines {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  width: 26px;
+}
+
+.hamburger-lines span {
+  display: block;
+  width: 100%;
+  height: 3px;
+  background: #fff;
+  border-radius: 1px;
+}
+
+/* Mobile Menu Overlay */
+.mobileOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+}
+
+/* Mobile Menu */
+.mobileMenu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 85%;
+  max-width: 350px;
+  height: 100vh;
+  background: linear-gradient(135deg, rgba(6, 6, 6, 0.95), rgba(30, 41, 59, 0.98));
+  backdrop-filter: blur(20px);
+  border-left: 4px solid;
+  border-image: var(--accent-gradient) 1;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.5rem;
+}
+
+.mobileHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
+}
+
+.mobileCloseButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobileCloseButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+.mobileNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobileLink {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  border-radius: 0px;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+.mobileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.mobileText {
+  flex: 1;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+.mobileArrow {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.3s ease;
+}
+
+.mobileLink:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border-color: rgba(212, 212, 212, 0.3);
+  transform: translateX(5px);
+}
+
+.mobileLink:hover .mobileIcon {
+  color: var(--accent-blue);
+}
+
+.mobileLink:hover .mobileArrow {
+  color: var(--accent-blue);
+  transform: translateX(3px);
+}
+
+.mobileCtaContainer {
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.mobileCta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 1rem;
+  background: var(--accent-gradient);
+  color: white;
+  text-decoration: none;
+  border-radius: 0px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(212, 212, 212, 0.3);
+}
+
+.mobileCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 212, 212, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .logoSub {
+    display: none;
+  }
+
+  .logoMain {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 0.6rem 0;
+  }
+  
+  .header.scrolled {
+    padding: 0.5rem 0;
+  }
+  
+  .header .container {
+    width: 95%;
+  }
+  
+  .logo-image {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .logoMain {
+    font-size: 1.1rem;
+  }
+  
+  .mobileMenu {
+    width: 90%;
+    padding: 1.5rem 1rem;
+  }
+  
+  .mobileLink {
+    padding: 0.8rem;
+  }
+  
+  .mobileText {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .header .container {
+    width: 98%;
+  }
+  
+  .logo-image {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .logoMain {
+    font-size: 1rem;
+  }
+  
+  .mobileMenu {
+    width: 100%;
+    padding: 1rem 0.8rem;
+  }
+  
+  .mobileLink {
+    padding: 0.7rem;
+  }
+  
+  .mobileText {
+    font-size: 0.9rem;
+  }
+}
+/* ==========================================================================
+   Full-screen menu — drops from the top when the hamburger is pressed.
+
+   Two halves, per the reference: brand and a statement over a dark still on the
+   left, the link columns on a light band over a grayscale image on the right.
+   Replaced .mobileMenu / .mobileOverlay, which slid in from the right.
+   ========================================================================== */
+
+.menu {
+  --menu-paper: #ececec;
+  --menu-ink: rgb(6, 6, 6);
+  --menu-ink-mute: rgba(6, 6, 6, 0.55);
+  --menu-line: rgba(6, 6, 6, 0.14);
+
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: var(--bg-body);
+  overflow-y: auto;
+  will-change: transform;
+}
+
+/* --- Left half ------------------------------------------------------------ */
+
+.menu-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  overflow: hidden;
+  isolation: isolate;
+  background: #060606;
+}
+
+/* Reuses the footer poster rather than shipping another asset — it is already
+   in the cache by the time anyone opens the menu. */
+.menu-brand-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('/videos/footer-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1) brightness(0.45);
+  pointer-events: none;
+}
+
+.menu-brand-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+.menu-brand-top,
+.menu-brand-mid,
+.menu-address {
+  position: relative;
+  z-index: 2;
+}
+
+.menu-logo {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.6vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.menu-year {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1rem;
+}
+
+.menu-statement {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.5rem, 3.1vw, 2.9rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin: 0;
+  max-width: 22ch;
+}
+
+.menu-address {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* --- Right half ----------------------------------------------------------- */
+
+.menu-side {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: 0;
+}
+
+.menu-links {
+  position: relative;
+  display: flex;
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: clamp(3.5rem, 6vw, 5rem) clamp(1.5rem, 3vw, 2.5rem) clamp(2.5rem, 4vw, 3.5rem);
+  background: var(--menu-paper);
+  color: var(--menu-ink);
+}
+
+.menu-close {
+  position: absolute;
+  top: clamp(1rem, 2vw, 1.75rem);
+  right: clamp(1rem, 2vw, 1.75rem);
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--menu-line);
+  background: transparent;
+  color: var(--menu-ink);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menu-close:hover {
+  background: var(--menu-ink);
+  color: var(--menu-paper);
+}
+
+.menu-col-title {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--menu-ink-mute);
+  margin-bottom: 1.5rem;
+}
+
+.menu-col ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.menu-col a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  color: var(--menu-ink);
+  text-decoration: none;
+  transition: opacity 0.2s ease, gap 0.2s ease;
+}
+
+.menu-col a:hover {
+  opacity: 0.6;
+  gap: 0.7rem;
+}
+
+.menu-col a svg {
+  font-size: 0.85em;
+  flex-shrink: 0;
+}
+
+/* --- Right half, lower image --------------------------------------------- */
+
+.menu-foot {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.menu-foot-media {
+  position: absolute;
+  inset: 0;
+  background-image: url('/Images/case-placeholder/gallery/g05.webp');
+  background-size: cover;
+  background-position: center;
+  filter: grayscale(1);
+}
+
+.menu-foot-bar {
+  position: absolute;
+  inset: auto 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: clamp(1rem, 2vw, 1.5rem) clamp(1.5rem, 3vw, 2.5rem);
+  background: linear-gradient(to top, rgba(6, 6, 6, 0.85), transparent);
+}
+
+.menu-date {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.menu-socials {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+
+.menu-socials a {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.9rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.menu-socials a:hover {
+  background: #fff;
+  color: #060606;
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 860px) {
+  /* Stacks: brand on top, links below. The lower image is dropped rather than
+     squeezed — at this width it would be a letterboxed strip. */
+  .menu {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .menu-brand {
+    min-height: 42vh;
+  }
+
+  .menu-foot {
+    display: none;
+  }
+
+  .menu-links {
+    min-height: 58vh;
+  }
+}
+
+@media (max-width: 520px) {
+  .menu-links {
+    flex-direction: column;
+    gap: 2rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu {
+    transition: none;
+  }
+}
+
+/* Same tap-target correction as the footer: the menu's link rows were 14px tall.
+   See Footer.css for the reasoning. */
+@media (pointer: coarse), (max-width: 768px) {
+  .menu-col ul {
+    gap: 0.25rem;
+  }
+
+  .menu-col a {
+    min-height: 44px;
+  }
+
+  .menu-socials a {
+    width: 44px;
+    height: 44px;
+  }
+
+  .menu-close {
+    width: 48px;
+    height: 48px;
+  }
+}

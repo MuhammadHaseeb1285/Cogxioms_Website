@@ -1,0 +1,463 @@
+/* ==========================================================================
+   Footer — signup band over video, then the link band.
+
+   Both bands sit on the 25/50/75 gridlines the rest of the site uses: the
+   signup copy starts on the 25% line, and the three link columns land on 25,
+   50 and 75 with the wordmark holding the first quarter.
+
+   Replaced .footer / .footer-grid / .brand-column / .footer-copyright.
+   ========================================================================== */
+
+.ft {
+  --ft-ink: #ffffff;
+  --ft-ink-soft: rgba(255, 255, 255, 0.72);
+  --ft-ink-mute: rgba(255, 255, 255, 0.45);
+  --ft-line: rgba(255, 255, 255, 0.08);
+  --ft-rule: #353535;
+  --ft-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+
+  position: relative;
+  background: var(--bg-body);
+  color: var(--ft-ink);
+}
+
+.ft-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ft-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: var(--ft-rule);
+}
+
+/* --- Signup band ---------------------------------------------------------- */
+
+.ft-cta {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  border-top: 1px solid var(--ft-rule);
+  border-bottom: 1px solid var(--ft-rule);
+  background: #060606;
+}
+
+/* Decoration only — see Footer.jsx. object-fit:cover so the 960x602 encode
+   fills any band width without letterboxing.
+
+   grayscale strips the clip's blue-purple cast, which read as a colour accent
+   the site does not otherwise have. Every other image here is desaturated —
+   the case-study galleries, the service panels, the team portraits — so a tinted
+   video was the one thing breaking that. Slightly darkened as well, since it sits
+   under text. */
+.ft-cta-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  filter: grayscale(1) brightness(0.82) contrast(1.05);
+}
+
+/* Holds the copy legible over a moving image. Heavier at the edges than the
+   middle, so the video still reads as motion behind the text. */
+.ft-cta-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(to right, rgba(6, 6, 6, 0.92) 0%, rgba(6, 6, 6, 0.55) 45%, rgba(6, 6, 6, 0.75) 100%),
+    linear-gradient(to bottom, rgba(6, 6, 6, 0.6) 0%, transparent 30%, rgba(6, 6, 6, 0.8) 100%);
+  pointer-events: none;
+}
+
+.ft-cta-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+.ft-cta-inner {
+  position: relative;
+  z-index: 3;
+  margin-left: 25%;
+  padding: clamp(3rem, 6vw, 6rem) var(--ft-pad) clamp(3.5rem, 7vw, 7rem);
+}
+
+.ft-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ft-ink);
+  margin-bottom: 1.15rem;
+}
+
+.ft-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--ft-ink);
+}
+
+.ft-cta-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3.8vw, 3.4rem);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: var(--ft-ink);
+  margin: 0 0 1.15rem;
+  max-width: 16ch;
+}
+
+.ft-cta-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--ft-ink-soft);
+  max-width: 52ch;
+  margin: 0 0 clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* Input and button as one bordered unit, as in the reference. */
+.ft-form {
+  display: flex;
+  align-items: stretch;
+  width: min(100%, 420px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(6, 6, 6, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.ft-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.9rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--ft-ink);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.ft-form input::placeholder {
+  color: var(--ft-ink-mute);
+}
+
+.ft-form input:focus {
+  outline: none;
+}
+
+.ft-form button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  margin: 0;
+  border: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--ft-ink);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.22s ease, color 0.22s ease;
+}
+
+.ft-form button:hover:not(:disabled) {
+  background: #ffffff;
+  color: #060606;
+}
+
+.ft-form button:disabled,
+.ft-form input:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* Reserves its line height so the layout does not shift when the outcome
+   message appears and clears again. */
+.ft-form-note {
+  min-height: 1.6em;
+  margin: 0.75rem 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  letter-spacing: 0.04em;
+  color: var(--ft-ink-soft);
+}
+
+.ft-form-note.is-error {
+  color: #ff9a9a;
+}
+
+/* --- Link band ------------------------------------------------------------ */
+
+.ft-main {
+  position: relative;
+  overflow: hidden;
+}
+
+.ft-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-bottom: 1px solid var(--ft-line);
+}
+
+.ft-brand,
+.ft-col {
+  padding: clamp(2.5rem, 4.5vw, 4rem) var(--ft-pad);
+}
+
+.ft-col {
+  border-left: 1px solid var(--ft-line);
+}
+
+/* The full name, not a monogram, and it has to hold one line inside a quarter
+   column. A quarter is 25vw minus the column padding, so the type is capped
+   against that rather than against the viewport: 1.55vw keeps eight characters
+   clear of the 25% gridline at every width. */
+.ft-wordmark {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 1.55vw, 1.9rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ft-ink);
+  margin-bottom: 1.25rem;
+  white-space: nowrap;
+}
+
+.ft-brand-note {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  line-height: 1.7;
+  color: var(--ft-ink-mute);
+  margin: 0;
+  max-width: 28ch;
+}
+
+.ft-col-title {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ft-ink-mute);
+  margin: 0 0 1.4rem;
+}
+
+.ft-links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.ft-links a {
+  font-size: 0.9rem;
+  color: var(--ft-ink-soft);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.ft-links a:hover {
+  color: var(--ft-ink);
+}
+
+.ft-socials {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1.75rem;
+}
+
+.ft-socials a {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--ft-line);
+  color: var(--ft-ink-soft);
+  font-size: 0.95rem;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.ft-socials a:hover {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #060606;
+}
+
+.ft-legal {
+  position: relative;
+  z-index: 2;
+  padding: 1.4rem var(--ft-pad);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  color: var(--ft-ink-mute);
+  text-align: center;
+}
+
+/* --- Responsive ----------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .ft-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ft-col:nth-child(odd) {
+    border-left: 0;
+  }
+
+  .ft-col:nth-child(n + 3) {
+    border-top: 1px solid var(--ft-line);
+  }
+
+  .ft-brand {
+    grid-column: 1 / -1;
+    border-bottom: 1px solid var(--ft-line);
+  }
+}
+
+@media (max-width: 720px) {
+  .ft-gridlines {
+    display: none;
+  }
+
+  .ft-cta-inner {
+    margin-left: 0;
+  }
+
+  .ft-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ft-col {
+    border-left: 0;
+    border-top: 1px solid var(--ft-line);
+  }
+
+  /* Centred once the four columns stack. Left-aligned single-column lists on a
+     phone leave a wide ragged margin down the right and read as unfinished; the
+     legal line was already centred, so this brings the rest into agreement.
+     flex containers need their own alignment — text-align does not reach them. */
+  .ft-brand,
+  .ft-col {
+    text-align: center;
+  }
+
+  .ft-brand-note {
+    max-width: 34ch;
+    margin-inline: auto;
+  }
+
+  .ft-links {
+    align-items: center;
+  }
+
+  .ft-socials {
+    justify-content: center;
+  }
+
+  /* The signup block centres with everything else, and the field goes full width
+     rather than sitting in a 420px box aligned to one side. */
+  .ft-cta-inner {
+    text-align: center;
+  }
+
+  .ft-eyebrow {
+    justify-content: center;
+  }
+
+  .ft-cta-heading,
+  .ft-cta-lede {
+    margin-inline: auto;
+  }
+
+  .ft-form {
+    width: 100%;
+    margin-inline: auto;
+  }
+}
+
+/* The clip is ambient, not informative — nothing is lost by holding it on the
+   poster frame for anyone who has asked for less movement.
+   The still goes on a pseudo-element rather than as a background on .ft-cta, so
+   it can carry the same grayscale as the video; a background-image on the band
+   itself could not be filtered without also filtering the copy. */
+@media (prefers-reduced-motion: reduce) {
+  .ft-cta-video {
+    display: none;
+  }
+
+  .ft-cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-image: url('/videos/footer-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(1) brightness(0.82) contrast(1.05);
+    pointer-events: none;
+  }
+}
+
+/* Measured at 360px: footer links were 14px tall — the bare text line box, with
+   no padding to catch a thumb. WCAG 2.5.5 asks for 44px; these now clear 40px of
+   hit area on touch without visually changing the list, since the padding is
+   inside the row gap. Pointer-precision query rather than width, because a small
+   laptop window does not need fat targets but a large phone does. */
+@media (pointer: coarse), (max-width: 768px) {
+  .ft-links {
+    gap: 0.25rem;
+  }
+
+  .ft-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+
+  .ft-socials a {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ft-form input,
+  .ft-form button {
+    min-height: 48px;
+  }
+}
+
+/* 10.8px at 360px — this is real copy, not UI chrome, so it gets a floor. */
+@media (max-width: 768px) {
+  .ft-brand-note {
+    font-size: 0.8rem;
+  }
+}
