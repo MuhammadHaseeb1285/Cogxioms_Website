@@ -1,0 +1,909 @@
+/* ==========================================================================
+   Case studies. Two surfaces share one token set:
+
+     .case-section  light  — the list, on the homepage and /projects
+     .case-detail   dark   — the individual case study
+
+   Every rule below reads from the --case-* tokens, so the light/dark split is
+   the token block and nothing else. That mirrors the reference, which builds one
+   row component with paired "white" and "black" variants rather than two
+   components. See ARMORY-REFERENCE.md.
+
+   --case-pad is the horizontal inset for text. Full-bleed blocks cancel it with
+   a negative margin, so the two must stay in step.
+   ========================================================================== */
+
+.case-section,
+.case-detail {
+  --case-pad: clamp(1.25rem, 2.6vw, 2.5rem);
+  --case-paper: #ececec;
+  --case-ink: rgb(6, 6, 6);
+  --case-ink-soft: rgb(26, 26, 26);
+  --case-ink-mute: rgba(6, 6, 6, 0.55);
+  --case-line: rgba(6, 6, 6, 0.14);
+  --case-hover: #e2e2e2;
+  --case-scrim: rgb(6, 6, 6);
+  --case-tile: rgba(6, 6, 6, 0.05);
+}
+
+/* Dark surface. The reference's case study pages are near-black throughout —
+   the light treatment belongs to the list, not the detail. */
+.case-detail {
+  --case-paper: #060606;
+  --case-ink: #ffffff;
+  --case-ink-soft: rgba(255, 255, 255, 0.72);
+  --case-ink-mute: rgba(255, 255, 255, 0.42);
+  --case-line: rgba(255, 255, 255, 0.08);
+  --case-hover: rgba(255, 255, 255, 0.028);
+  --case-scrim: #ffffff;
+  --case-tile: rgba(255, 255, 255, 0.05);
+}
+
+.case-section,
+.case-detail {
+  position: relative;
+  background: var(--case-paper);
+  color: var(--case-ink);
+}
+
+.case-section {
+  padding: clamp(2.5rem, 5vw, 4.5rem) 0 0;
+  overflow: hidden;
+}
+
+/* Three vertical rules at 25 / 50 / 75, matching .approach-gridlines and
+   .scroll-reveal-grid — same space-evenly device, same 0.1px weight. The row
+   grid below aligns to these quarters, which is the whole reason the layout
+   reads as a grid rather than four arbitrary columns. */
+.case-gridlines {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: space-evenly;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.case-gridline {
+  width: 0.1px;
+  height: 100%;
+  background: var(--case-line);
+}
+
+/* --- Intro --------------------------------------------------------------- */
+
+/* Starts on the 25% line, so the heading block sits in the second quarter
+   alongside the year column of the rows below it. */
+.case-intro {
+  position: relative;
+  z-index: 1;
+  padding: 0 var(--case-pad) clamp(2rem, 4vw, 3rem);
+  margin-left: 25%;
+}
+
+.case-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--case-ink);
+  margin-bottom: 1.15rem;
+}
+
+.case-hatch {
+  display: block;
+  width: 26px;
+  height: 13px;
+  flex-shrink: 0;
+  color: var(--case-ink);
+}
+
+.case-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 3.2vw, 3rem);
+  line-height: 1.07;
+  letter-spacing: -0.025em;
+  color: var(--case-ink);
+  margin: 0 0 1rem;
+  max-width: 18ch;
+}
+
+.case-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: var(--case-ink-soft);
+  max-width: 52ch;
+  margin: 0;
+}
+
+/* --- Rows ---------------------------------------------------------------- */
+
+.case-list {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--case-line);
+}
+
+.case-row-wrap {
+  border-bottom: 1px solid var(--case-line);
+}
+
+/* Four equal quarters, landing on the same 25/50/75 lines as the gridlines:
+     1  media plate
+     2  year, and nothing else
+     3  title + summary
+     4  chevron, pushed to the far edge
+   The year gets a full quarter of its own — cramming it into a narrow column
+   put the title at ~37% instead of on the 50% line, which is what made the
+   rows look misaligned against the gridlines. */
+.case-row {
+  display: grid;
+  grid-template-columns: 25% 25% minmax(0, 1fr) auto;
+  align-items: start;
+  min-height: 200px;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.25s ease;
+}
+
+.case-row:hover {
+  background: var(--case-hover);
+}
+
+/* Three stacked layers, per ARMORY-REFERENCE.md §2:
+     z0  photograph — hidden at rest, faded in on hover
+     z1  scrim      — 0 -> 6% on hover, keeps the photo off the copy
+     z2  wordmark   — always visible
+     z3  grain      — static tile over everything
+   No border-right here: the 25% gridline already marks that edge, and drawing
+   both stacks two hairlines on the same pixel. */
+.case-media {
+  position: relative;
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  padding: 1.25rem;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.case-media-img {
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  width: auto;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.case-media-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: var(--case-scrim);
+  pointer-events: none;
+}
+
+.case-media-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  opacity: 0.13;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+/* Stands in for the reference's client-logo slot. These codenames are
+   deliberately not real client names, so a wordmark is the honest equivalent.
+
+   Authored white and shown through an invert filter rather than coloured
+   directly — that is the reference's own mechanism (the source art is white on
+   transparent), and it keeps the resting and hover states to one animatable
+   property. The filter values live in Projects.jsx because they differ per
+   variant: the light row inverts on hover, the dark row never needs to. */
+.case-wordmark {
+  position: relative;
+  z-index: 2;
+  font-family: var(--font-mono);
+  font-size: clamp(0.85rem, 1.4vw, 1.05rem);
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.case-year {
+  grid-column: 2;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.06em;
+  color: var(--case-ink-soft);
+  padding: 2.6rem var(--case-pad) 0;
+}
+
+.case-body {
+  grid-column: 3;
+  padding: 2.6rem 1.5rem 2rem 0;
+  min-width: 0;
+}
+
+/* The reference leaves a deliberate gap here — title and summary are not a
+   stacked pair, they read as two separate registers. */
+.case-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 1.6vw, 1.35rem);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  color: var(--case-ink);
+  margin: 0 0 2.2rem;
+}
+
+.case-summary {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  line-height: 1.7;
+  color: var(--case-ink-soft);
+  margin: 0;
+  max-width: 44ch;
+}
+
+/* Nudge is driven by the same hover spring as the media layers (see
+   Projects.jsx), so it arrives on the same curve rather than on its own tween. */
+.case-chevron {
+  grid-column: 4;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: var(--case-ink);
+  padding-right: var(--case-pad);
+}
+
+/* --- Footer -------------------------------------------------------------- */
+
+.case-footer {
+  position: relative;
+  z-index: 1;
+  padding: clamp(2rem, 4vw, 3rem) var(--case-pad);
+  margin-left: 25%;
+}
+
+/* ==========================================================================
+   Detail page
+   ========================================================================== */
+
+.case-detail {
+  overflow: hidden;
+  /* Two separate things opened a black strip above the hero:
+       App.css:143  clamp(3rem, 8vw, 5rem) of padding on every <section>
+       App.css:136  margin-top: 80px on <main>, to clear the fixed header
+     The second is the one that mattered — it pushes every page down by the
+     header's height, so the body background showed through above the image.
+     The header is position:fixed and background:transparent, so cancelling that
+     offset here lets the photograph run up under it and the logo and menu sit
+     over the image, which is the intent. Keep -80px in step with App.css:136.
+     .case-hero's own top padding (4-8rem) holds the title clear of the header. */
+  padding: 0;
+  margin-top: -80px;
+}
+
+/* --- Hero ---------------------------------------------------------------- */
+
+/* Full-bleed photograph, grain over it, and a gradient that dissolves the
+   bottom edge into the page so the image never terminates on a hard line.
+   Content is centred, unlike every other block on the page. */
+.case-hero {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: clamp(360px, 46vw, 720px);
+  padding: clamp(4rem, 9vw, 8rem) var(--case-pad) clamp(3rem, 7vw, 6rem);
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--case-paper);
+}
+
+.case-hero-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.case-hero-grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.18;
+  background-image: url('/Images/noise-tile.png');
+  background-repeat: repeat;
+  background-position: left top;
+  background-size: 93.5px auto;
+  pointer-events: none;
+}
+
+.case-hero-fade {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 6, 6, 0.45) 0%,
+    rgba(6, 6, 6, 0.15) 35%,
+    rgba(6, 6, 6, 0.72) 78%,
+    #060606 100%
+  );
+  pointer-events: none;
+}
+
+.case-hero-inner {
+  position: relative;
+  z-index: 3;
+  max-width: 62ch;
+}
+
+.case-hero-mark {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+}
+
+.case-hero-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4.6vw, 4rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+  color: #fff;
+  margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+}
+
+.case-hero-lede {
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 56ch;
+  margin: 0 auto;
+}
+
+.case-back {
+  position: relative;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--case-ink-mute);
+  text-decoration: none;
+  padding: clamp(1.25rem, 2.5vw, 2rem) var(--case-pad) 0;
+  transition: color 0.2s ease;
+}
+
+.case-back:hover {
+  color: var(--case-ink);
+}
+
+/* --- Stat row ------------------------------------------------------------ */
+
+/* Icon pinned top, figure and caption pinned bottom, so a three-line caption
+   pushes its number up rather than dragging the row taller. That bottom
+   alignment is why the four figures sit at different heights in the reference —
+   it is intentional, not a bug to correct. */
+.case-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--case-line);
+  border-bottom: 1px solid var(--case-line);
+}
+
+.case-stat {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(2.5rem, 6vw, 5rem);
+  padding: clamp(1.75rem, 3vw, 2.5rem) var(--case-pad);
+}
+
+.case-stat + .case-stat {
+  border-left: 1px solid var(--case-line);
+}
+
+.case-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border: 1px solid var(--case-line);
+  border-radius: 7px;
+  background: var(--case-tile);
+  color: var(--case-ink);
+  font-size: 1.05rem;
+}
+
+.case-stat-value {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 2.9vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: -0.022em;
+  line-height: 1.1;
+  color: var(--case-ink);
+  margin-bottom: 0.7rem;
+}
+
+.case-stat-label {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--case-ink-soft);
+}
+
+/* --- Body: 75% content / 25% meta rail ----------------------------------- */
+
+/* The single defining move of the layout. Everything below the stats sits in a
+   three-quarter column with the metadata in a rail beside it, divided by one
+   continuous hairline. Galleries fill the column's full width; prose is inset.
+   Getting this wrong is what made the earlier attempt read as a generic
+   centred article. */
+.case-body-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 75% minmax(0, 25%);
+  z-index: 1;
+}
+
+.case-body-main {
+  min-width: 0;
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+}
+
+.case-rail {
+  border-left: 1px solid var(--case-line);
+  padding: clamp(2rem, 4vw, 3rem) var(--case-pad);
+}
+
+/* Text blocks are inset; galleries are not — see .case-gallery. */
+.case-inset {
+  padding-inline: var(--case-pad);
+}
+
+/* --- Quote and prose ----------------------------------------------------- */
+
+.case-quote {
+  margin: clamp(2rem, 4vw, 3.25rem) 0 clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+.case-quote-text,
+.case-pull {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.5vw, 2.15rem);
+  font-weight: 400;
+  line-height: 1.34;
+  letter-spacing: -0.022em;
+  color: var(--case-ink);
+  margin: 0;
+  max-width: 40ch;
+}
+
+.case-quote-text {
+  margin-bottom: 1.5rem;
+}
+
+.case-quote-name {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--case-ink);
+  margin-bottom: 0.3rem;
+}
+
+.case-quote-role {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--case-ink-mute);
+}
+
+.case-prose {
+  font-size: 0.875rem;
+  line-height: 1.75;
+  color: var(--case-ink-soft);
+  margin: 0 0 clamp(1.75rem, 3.5vw, 2.75rem);
+  max-width: 78ch;
+}
+
+/* Two columns of body copy, as the reference sets its solution passage. Using
+   column-count rather than two authored halves means one `solution` string
+   still balances itself and reflows to a single column when narrow. */
+.case-prose-split {
+  column-count: 2;
+  column-gap: clamp(1.5rem, 3.5vw, 3.5rem);
+  max-width: none;
+}
+
+.case-pull {
+  margin: clamp(2.25rem, 4.5vw, 3.5rem) 0 clamp(1.25rem, 2.5vw, 1.75rem);
+  max-width: 44ch;
+}
+
+/* --- Achievements -------------------------------------------------------- */
+
+/* 2 x 2, monospace, thin check glyphs — the reference sets these as mono, which
+   is what stops four short claims reading as marketing bullets. */
+.case-achievements {
+  list-style: none;
+  margin: 0 0 clamp(1.5rem, 3vw, 2.25rem);
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.1rem, 2.2vw, 1.75rem) clamp(1.5rem, 3.5vw, 3.5rem);
+}
+
+.case-achievements li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.775rem;
+  line-height: 1.6;
+  color: var(--case-ink-soft);
+}
+
+.case-achievements svg {
+  margin-top: 0.15em;
+  flex-shrink: 0;
+  color: var(--case-ink);
+}
+
+/* --- Section headings on the detail page --------------------------------- */
+
+.case-block {
+  padding: 0;
+  margin-bottom: clamp(1.75rem, 3.5vw, 2.75rem);
+}
+
+.case-block h2 {
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--case-ink-mute);
+  margin: 0 0 1.1rem;
+}
+
+.case-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.case-chip {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--case-line);
+  color: var(--case-ink-soft);
+  white-space: nowrap;
+}
+
+/* --- Meta rail ----------------------------------------------------------- */
+
+.case-meta {
+  margin: 0;
+  position: sticky;
+  top: clamp(5rem, 9vw, 7rem);
+}
+
+.case-meta-item + .case-meta-item {
+  margin-top: 1.6rem;
+}
+
+.case-meta dt {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--case-ink-mute);
+  margin-bottom: 0.45rem;
+}
+
+.case-meta dd {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--case-ink);
+  word-break: break-word;
+}
+
+/* --- Galleries ----------------------------------------------------------- */
+
+/* Flush cells, no gap, hairline above, and full-bleed inside the 75% column —
+   the negative margin cancels .case-inset. The blanket grayscale is what lets a
+   mixed set of sources read as one commission; drop it and the page turns into a
+   mood board. */
+/* One hairline above the whole block, none between its rows — that is what lets
+   a 2-up sit directly on top of a wide single with no seam. */
+.case-gallery-block {
+  margin: clamp(1.75rem, 3.5vw, 3rem) 0;
+  border-top: 1px solid var(--case-line);
+  filter: grayscale(1);
+}
+
+.case-gallery {
+  display: flex;
+  gap: 0;
+}
+
+/* flex-basis 0 with an explicit 1px width is how the reference forces equal
+   columns regardless of intrinsic image size — without the width, wide source
+   images claim extra space. */
+.case-gallery-cell {
+  position: relative;
+  flex: 1 0 0;
+  width: 1px;
+  aspect-ratio: 1.15385;
+  overflow: hidden;
+}
+
+/* Exactly twice the cell ratio, so one wide image stands as tall as a row of
+   two beside it and the vertical rhythm holds. */
+.case-gallery-wide .case-gallery-cell {
+  flex: none;
+  width: 100%;
+  aspect-ratio: 2.30769;
+}
+
+.case-gallery-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* --- Related ------------------------------------------------------------- */
+
+.case-related {
+  position: relative;
+  padding: 0;
+  border-top: 1px solid var(--case-line);
+  overflow: hidden;
+}
+
+.case-related-head {
+  position: relative;
+  z-index: 1;
+  margin-left: 25%;
+  padding: clamp(2.5rem, 5vw, 4.5rem) var(--case-pad) clamp(2rem, 4vw, 3rem);
+}
+
+.case-related-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.9rem, 3.6vw, 3.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.028em;
+  color: var(--case-ink);
+  margin: 0 0 1rem;
+  max-width: 12ch;
+}
+
+.case-related-cta {
+  position: relative;
+  z-index: 1;
+  margin-left: 25%;
+  padding: clamp(2rem, 4vw, 3rem) var(--case-pad);
+}
+
+.case-detail-missing {
+  text-align: center;
+  min-height: 50vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 1.25rem;
+}
+
+.case-detail-missing h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--case-ink);
+}
+
+.case-detail-missing p {
+  color: var(--case-ink-soft);
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 1100px) {
+  /* The rail cannot hold a label and a value side by side much below this, so
+     it becomes a full-width band under the content and the metadata reflows
+     into columns. The dividing hairline moves from left to top with it. */
+  .case-body-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .case-rail {
+    border-left: none;
+    border-top: 1px solid var(--case-line);
+  }
+
+  .case-meta {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .case-meta-item + .case-meta-item {
+    margin-top: 0;
+  }
+
+  .case-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .case-stat:nth-child(3) {
+    border-left: none;
+  }
+
+  .case-stat:nth-child(3),
+  .case-stat:nth-child(4) {
+    border-top: 1px solid var(--case-line);
+  }
+
+  .case-row {
+    grid-template-columns: 25% 22% minmax(0, 1fr) auto;
+    min-height: 168px;
+  }
+}
+
+@media (max-width: 860px) {
+  /* Stays two-up rather than collapsing to a single column. Four figures stacked
+     one per row turned the stat block into four screens of scrolling on a phone
+     for no benefit; 2x2 keeps "27k / 9" on one row and "63 / 3" on the next, and
+     4 divides evenly so there is no orphan cell.
+     Centred for the same reason as the Statistics tiles: a two-character figure
+     left-aligned against a label that wraps looks lopsided in a narrow cell. */
+  .case-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .case-stat {
+    gap: 1.25rem;
+    align-items: center;
+    text-align: center;
+  }
+
+  .case-stat + .case-stat {
+    border-left: 1px solid var(--case-line);
+  }
+
+  /* Only the odd cells start a row, so only they lose the left border; cells 3
+     and 4 gain the divider above them. */
+  .case-stat:nth-child(odd) {
+    border-left: none;
+  }
+
+  .case-stat:nth-child(n + 3) {
+    border-top: 1px solid var(--case-line);
+  }
+
+  .case-stat-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 0.9rem;
+  }
+
+  .case-prose-split {
+    column-count: 1;
+  }
+
+  .case-achievements {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  /* Single-column rows leave no column boundaries for the rules to mark, which
+     is how .approach-gridlines behaves at its own breakpoint. */
+  .case-gridlines,
+  .case-media {
+    display: none;
+  }
+
+  .case-intro,
+  .case-footer,
+  .case-related-head,
+  .case-related-cta {
+    margin-left: 0;
+  }
+
+  .case-row {
+    grid-template-columns: minmax(0, 1fr) 2.5rem;
+    grid-template-areas:
+      'year chevron'
+      'body body';
+    min-height: 0;
+    padding: 1.25rem var(--case-pad);
+  }
+
+  .case-year {
+    grid-area: year;
+    grid-column: auto;
+    padding: 0;
+  }
+
+  .case-chevron {
+    grid-area: chevron;
+    grid-column: auto;
+    align-self: start;
+    padding-right: 0;
+  }
+
+  .case-body {
+    grid-area: body;
+    grid-column: auto;
+    padding: 0.65rem 0 0;
+  }
+
+  .case-title {
+    margin-bottom: 0.75rem;
+  }
+
+  /* Rows become a stack, and every cell — including the wide single — falls
+     back to the standard 15:13 so the column reads consistently. Matches the
+     reference's own mobile breakpoint. */
+  .case-gallery {
+    flex-direction: column;
+  }
+
+  .case-gallery-cell,
+  .case-gallery-wide .case-gallery-cell {
+    flex: none;
+    width: 100%;
+    aspect-ratio: 1.15385;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The chevron nudge is suppressed in Projects.jsx via useReducedMotion. The
+     media reveal is left alone deliberately — it is an opacity/filter cross-fade
+     with nothing travelling across the screen. */
+  .case-media-grain {
+    opacity: 0.08;
+  }
+}

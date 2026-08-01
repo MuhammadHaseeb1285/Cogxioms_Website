@@ -1,0 +1,18 @@
+/* Host is fixed and inert; only the panel inside it moves. pointer-events:none
+   throughout so the veil can never swallow a click on its way out — it sits above
+   the header, which is the whole point, and a 600ms dead zone over the nav would
+   be worse than no transition at all. */
+.page-veil-host {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.page-veil {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-body);
+  will-change: transform;
+}
